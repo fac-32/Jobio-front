@@ -11,6 +11,7 @@ function App() {
             <p>Hello world</p>
             <h1>Jobio project</h1>
             <div className="card">
+                <button onClick={handleClick}>Fetch From Backend</button>
                 <button onClick={() => setCount((count) => count + 1)}>
                     count is {count}
                 </button>
@@ -23,6 +24,18 @@ function App() {
             </p>
         </>
     );
+}
+
+function handleClick() {
+    customFetch().then((result) => {
+        console.log(result);
+    });
+}
+
+async function customFetch() {
+    const data = await fetch('/api');
+    const text = data.text();
+    return text;
 }
 
 export default App;
