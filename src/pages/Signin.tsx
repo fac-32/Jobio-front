@@ -37,6 +37,6 @@ export default function Signin() {
     );
 }
 
-function handleSignin(email, password) {
+function handleSignin(email: string, password: string) {
     console.log('email: ', email, 'password: ', password);
 }
