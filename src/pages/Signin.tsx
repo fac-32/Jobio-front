@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import '../App.css';
 
-export default function Signin() {
+export default function SignIn() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [repeatPassword, setRepeatPassword] = useState('');
@@ -9,7 +9,7 @@ export default function Signin() {
 
     return (
         <>
-            <h1>Sign in Page</h1>
+            <h1>Sign In Page</h1>
             <div>
                 <input
                     type="email"
@@ -37,12 +37,12 @@ export default function Signin() {
                 <button
                     onClick={() => {
                         if (!validateEmail(email)) {
-                            console.log('something is wrong with input');
+                            console.log('invalid email input');
                             return;
                         }
                         if (!newUser) {
                             if (password.length < 0) {
-                                console.log('something is wrong with input');
+                                console.log('missing pw input');
                                 return;
                             }
                             handleSignin(email, password);
@@ -55,7 +55,7 @@ export default function Signin() {
                             password.length < 6 ||
                             password !== repeatPassword
                         ) {
-                            console.log('passwrd too short');
+                            console.log('passwrd problem');
                             return;
                         }
                         handleSignUp(email, password);
