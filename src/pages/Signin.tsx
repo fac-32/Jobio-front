@@ -26,8 +26,15 @@ export default function Signin() {
             </div>
             <div>
                 <button
-                    onClick={(email, password) => {
+                    onClick={() => {
+                        if (!validateEmail(email) || password.length < 0) {
+                            console.log('something is wrong with input');
+                            return;
+                        }
+                        // console.log('input all good');
                         handleSignin(email, password);
+                        setEmail('');
+                        setPassword('');
                     }}
                 >
                     Sign In
@@ -39,4 +46,10 @@ export default function Signin() {
 
 function handleSignin(email: string, password: string) {
     console.log('email: ', email, 'password: ', password);
+}
+
+function validateEmail(email: string) {
+    const regex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+    // regex.test() returns truw if it MATCHES
+    return regex.test(email);
 }
