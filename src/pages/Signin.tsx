@@ -27,6 +27,7 @@ export default function Signin() {
             <div>
                 {newUser && (
                     <PwInput
+                        placeholder="Repeat password"
                         value={repeatPassword}
                         onChange={(e) => setRepeatPassword(e.target.value)}
                     />
@@ -97,15 +98,16 @@ function validateEmail(email: string) {
 }
 
 type PwInputProps = {
+    placeholder?: string;
     value: string;
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
-function PwInput({ value, onChange }: PwInputProps) {
+function PwInput({ placeholder, value, onChange }: PwInputProps) {
     return (
         <input
             type="password"
-            placeholder="Password"
+            placeholder={placeholder || 'Password'}
             value={value}
             onChange={onChange}
         />
