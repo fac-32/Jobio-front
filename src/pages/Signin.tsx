@@ -25,10 +25,12 @@ export default function Signin() {
                 />
             </div>
             <div>
-                <PwInput
-                    value={repeatPassword}
-                    onChange={(e) => setRepeatPassword(e.target.value)}
-                />
+                {newUser && (
+                    <PwInput
+                        value={repeatPassword}
+                        onChange={(e) => setRepeatPassword(e.target.value)}
+                    />
+                )}
             </div>
             <div>
                 <button
@@ -48,7 +50,10 @@ export default function Signin() {
                             setPassword('');
                             return;
                         }
-                        if (password.length < 6) {
+                        if (
+                            password.length < 6 ||
+                            password !== repeatPassword
+                        ) {
                             console.log('passwrd too short');
                             return;
                         }
