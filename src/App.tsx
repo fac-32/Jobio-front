@@ -7,12 +7,12 @@ export default function App() {
     return (
         <>
             <nav>
-                <Link to="/">Home</Link>
+                <Link to="/home">Home</Link>
             </nav>
 
             <Suspense fallback={<p>Loading…</p>}>
                 <Routes>
-                    <Route path="/" element={<Home />} />
+                    <Route path="/home" element={<Home />} />
                 </Routes>
             </Suspense>
         </>
