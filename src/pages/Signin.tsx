@@ -4,6 +4,7 @@ import '../App.css';
 export default function Signin() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [repeatPassword, setRepeatPassword] = useState('');
     const [newUser, setNewUser] = useState(false);
 
     return (
@@ -18,11 +19,15 @@ export default function Signin() {
                 />
             </div>
             <div>
-                <input
-                    type="password"
-                    placeholder="Password"
+                <PwInput
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                />
+            </div>
+            <div>
+                <PwInput
+                    value={repeatPassword}
+                    onChange={(e) => setRepeatPassword(e.target.value)}
                 />
             </div>
             <div>
@@ -84,4 +89,20 @@ function validateEmail(email: string) {
     const regex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
     // regex.test() returns truw if it MATCHES
     return regex.test(email);
+}
+
+type PwInputProps = {
+    value: string;
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+};
+
+function PwInput({ value, onChange }: PwInputProps) {
+    return (
+        <input
+            type="password"
+            placeholder="Password"
+            value={value}
+            onChange={onChange}
+        />
+    );
 }
