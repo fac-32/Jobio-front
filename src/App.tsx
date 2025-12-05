@@ -9,7 +9,7 @@ import { Routes, Route, Link } from 'react-router-dom';
 // 2. add a nav link
 // 3. add a Route inside the Routes blcok, make sure the path matches with Link
 
-const Home = lazy(() => import('./pages/home'));
+const Home = lazy(() => import('./pages/Home'));
 
 export default function App() {
     return (
