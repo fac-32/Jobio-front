@@ -10,6 +10,7 @@ import { Routes, Route, Link } from 'react-router-dom';
 // 3. add a Route inside the Routes blcok, make sure the path matches with Link
 
 const Home = lazy(() => import('./pages/home'));
+const SignIn = lazy(() => import('./pages/Signin'));
 
 export default function App() {
     return (
@@ -17,11 +18,13 @@ export default function App() {
             {/* The <nav> element will exist on every page, since we are only sqapping the Routes below */}
             <nav>
                 <Link to="/home">Home</Link>
+                <Link to="/sign-in">Sign In</Link>
             </nav>
 
             <Suspense fallback={<p>Loading…</p>}>
                 <Routes>
                     <Route path="/home" element={<Home />} />
+                    <Route path="/sign-in" element={<SignIn />} />
                 </Routes>
             </Suspense>
         </>
