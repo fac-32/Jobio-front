@@ -10,7 +10,7 @@ import { Routes, Route, Link } from 'react-router-dom';
 // 3. add a Route inside the Routes blcok, make sure the path matches with Link
 
 const Home = lazy(() => import('./pages/Home'));
-const ProfileSetup = lazy(() => import('./pages/ProfileSetup/ProfileSetup'));
+const MatchPage = lazy(() => import('./pages/MatchPage/MatchPage'));
 
 export default function App() {
     return (
@@ -23,7 +23,7 @@ export default function App() {
             <Suspense fallback={<p>Loading…</p>}>
                 <Routes>
                     <Route path="/home" element={<Home />} />
-                    <Route path="/profile-setup" element={<ProfileSetup />} />
+                    <Route path="/match" element={<MatchPage />} />
                 </Routes>
             </Suspense>
         </>
