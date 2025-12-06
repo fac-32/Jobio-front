@@ -3,8 +3,8 @@ import { describe, it, expect } from 'vitest';
 import { Hello } from '../src/components/Hello';
 
 describe('Hello', () => {
-  it('renders greeting', () => {
-    render(<Hello />);
-    expect(screen.getByText(/hello world/i)).toBeInTheDocument();
-  });
+    it('renders greeting', () => {
+        render(<Hello />);
+        expect(screen.getByText(/hello world/i)).toBeInTheDocument();
+    });
 });
