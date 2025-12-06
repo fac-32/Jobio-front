@@ -9,7 +9,8 @@ import { Routes, Route, Link } from 'react-router-dom';
 // 2. add a nav link
 // 3. add a Route inside the Routes blcok, make sure the path matches with Link
 
-const Home = lazy(() => import('./pages/home'));
+const Home = lazy(() => import('./pages/Home'));
+const MatchPage = lazy(() => import('./pages/MatchPage/MatchPage'));
 const SignIn = lazy(() => import('./pages/Signin'));
 
 export default function App() {
@@ -24,6 +25,7 @@ export default function App() {
             <Suspense fallback={<p>Loading…</p>}>
                 <Routes>
                     <Route path="/home" element={<Home />} />
+                    <Route path="/match" element={<MatchPage />} />
                     <Route path="/sign-in" element={<SignIn />} />
                 </Routes>
             </Suspense>
