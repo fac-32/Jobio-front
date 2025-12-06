@@ -11,6 +11,7 @@ import { Routes, Route, Link } from 'react-router-dom';
 
 const Home = lazy(() => import('./pages/Home'));
 const MatchPage = lazy(() => import('./pages/MatchPage/MatchPage'));
+const SignIn = lazy(() => import('./pages/Signin'));
 
 export default function App() {
     return (
@@ -18,12 +19,14 @@ export default function App() {
             {/* The <nav> element will exist on every page, since we are only sqapping the Routes below */}
             <nav>
                 <Link to="/home">Home</Link>
+                <Link to="/sign-in">Sign In</Link>
             </nav>
 
             <Suspense fallback={<p>Loading…</p>}>
                 <Routes>
                     <Route path="/home" element={<Home />} />
                     <Route path="/match" element={<MatchPage />} />
+                    <Route path="/sign-in" element={<SignIn />} />
                 </Routes>
             </Suspense>
         </>
