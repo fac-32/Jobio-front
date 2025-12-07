@@ -15,7 +15,6 @@ export function Button({
     const variants = {
         primary: 'bg-indigo-600 text-white hover:bg-indigo-700',
 
-        // Outline style EXACTLY as you wanted + pointer included already
         outline:
             'border border-indigo-600 text-indigo-600 hover:bg-indigo-600 hover:text-white',
 
