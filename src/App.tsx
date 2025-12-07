@@ -1,6 +1,7 @@
 // this works as an equivalent to laoyout
 import { Suspense, lazy } from 'react';
-import { Routes, Route, Link } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
+import MainLayout from './layout/MainLayout';
 
 // this is lazy import,
 // it lets you defer loading component's code until it is rendered for the first time
@@ -16,17 +17,13 @@ const SignIn = lazy(() => import('./pages/Signin'));
 export default function App() {
     return (
         <>
-            {/* The <nav> element will exist on every page, since we are only sqapping the Routes below */}
-            <nav>
-                <Link to="/home">Home</Link>
-                <Link to="/sign-in">Sign In</Link>
-            </nav>
-
             <Suspense fallback={<p>Loading…</p>}>
                 <Routes>
-                    <Route path="/home" element={<Home />} />
-                    <Route path="/match" element={<MatchPage />} />
-                    <Route path="/sign-in" element={<SignIn />} />
+                    <Route element={<MainLayout />}>
+                        <Route path="/" element={<Home />} />
+                        <Route path="/match" element={<MatchPage />} />
+                        <Route path="/sign-in" element={<SignIn />} />
+                    </Route>
                 </Routes>
             </Suspense>
         </>
