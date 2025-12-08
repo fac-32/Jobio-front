@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import '../App.css';
 
 export default function SignIn() {
     const [email, setEmail] = useState('');
@@ -8,32 +7,37 @@ export default function SignIn() {
     const [newUser, setNewUser] = useState(false);
 
     return (
-        <>
-            <h1>Sign In Page</h1>
-            <div>
+        <div className="flex flex-col items-center mt-10 px-4">
+            <h1 className="text-3xl font-bold text-indigo-600 mb-6">
+                {newUser ? 'Create Account' : 'Sign In'}
+            </h1>
+
+            <div className="w-full max-w-sm space-y-4">
+                {/* Email */}
                 <input
                     type="email"
                     placeholder="Email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
                 />
-            </div>
-            <div>
+
+                {/* Password */}
                 <PwInput
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                 />
-            </div>
-            <div>
+
+                {/* Repeat password (only for sign-up) */}
                 {newUser && (
                     <PwInput
-                        placeholder="Repeat password"
+                        placeholder="Repeat Password"
                         value={repeatPassword}
                         onChange={(e) => setRepeatPassword(e.target.value)}
                     />
                 )}
-            </div>
-            <div>
+
+                {/* Submit button */}
                 <button
                     onClick={() => {
                         if (!validateEmail(email)) {
@@ -41,12 +45,11 @@ export default function SignIn() {
                             return;
                         }
                         if (!newUser) {
-                            if (password.length < 0) {
+                            if (password.length < 1) {
                                 console.log('missing pw input');
                                 return;
                             }
                             handleSignin(email, password);
-                            // console.log('input all good');
                             setEmail('');
                             setPassword('');
                             return;
@@ -55,45 +58,42 @@ export default function SignIn() {
                             password.length < 6 ||
                             password !== repeatPassword
                         ) {
-                            console.log('passwrd problem');
+                            console.log('password problem');
                             return;
                         }
                         handleSignUp(email, password);
-                        // console.log('input all good');
                         setEmail('');
                         setPassword('');
-                        return;
                     }}
+                    className="w-full bg-indigo-600 text-white py-2 rounded-lg font-medium hover:bg-indigo-700 transition cursor-pointer"
                 >
-                    {newUser ? 'Sign Up' : 'Sign In'}
+                    {newUser ? 'Create Account' : 'Sign In'}
                 </button>
-            </div>
-            <div>
+
+                {/* Toggle between sign in / sign up */}
                 <button
-                    onClick={() => {
-                        setNewUser(!newUser);
-                    }}
+                    onClick={() => setNewUser(!newUser)}
+                    className="w-full text-indigo-600 hover:underline text-sm mt-2"
                 >
                     {newUser
                         ? 'Have an account? Sign In'
                         : "Don't have an account? Sign Up"}
                 </button>
             </div>
-        </>
+        </div>
     );
 }
 
 function handleSignin(email: string, password: string) {
-    console.log('sign in: email: ', email, 'password: ', password);
+    console.log('sign in:', email, password);
 }
 
 function handleSignUp(email: string, password: string) {
-    console.log('sign up; email: ', email, 'password: ', password);
+    console.log('sign up:', email, password);
 }
 
 function validateEmail(email: string) {
     const regex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
-    // regex.test() returns truw if it MATCHES
     return regex.test(email);
 }
 
@@ -110,6 +110,7 @@ function PwInput({ placeholder, value, onChange }: PwInputProps) {
             placeholder={placeholder || 'Password'}
             value={value}
             onChange={onChange}
+            className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
         />
     );
 }
