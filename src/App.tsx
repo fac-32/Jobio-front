@@ -14,6 +14,7 @@ const Home = lazy(() => import('./pages/home'));
 const BioPage = lazy(() => import('./pages/BioPage'));
 const MatchPage = lazy(() => import('./pages/MatchPage/MatchPage'));
 const SignIn = lazy(() => import('./pages/Signin'));
+const ConfirmEmail = lazy(() => import('./pages/ConfirmEmail'));
 
 export default function App() {
     return (
@@ -26,6 +27,7 @@ export default function App() {
                         <Route path="/match" element={<MatchPage />} />
                         <Route path="/sign-in" element={<SignIn />} />
                     </Route>
+                    <Route path="/confirm-email" element={<ConfirmEmail />} />
                 </Routes>
             </Suspense>
         </>
