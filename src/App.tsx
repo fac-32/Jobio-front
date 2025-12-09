@@ -7,7 +7,7 @@ import MainLayout from './layout/MainLayout';
 // it lets you defer loading component's code until it is rendered for the first time
 // when creating a new page
 // 1. do lazy import as follow
-// 2. add a nav link
+// 2. add a nav link - in components/Navbar.tsx
 // 3. add a Route inside the Routes block, make sure the path matches with Link
 
 const Home = lazy(() => import('./pages/home'));
