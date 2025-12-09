@@ -1,5 +1,6 @@
 import { Button } from '../components/ui/Button';
 import { useBioInputHandler } from './CvProcessor';
+const MAX_TEXT_LENGTH = 50;
 
 // BioPage: allows user to upload their bio, including a CV file and 
 // some text as their dealbreakers
@@ -25,7 +26,7 @@ export default function BioPage() {
             // SUCCESS: 'validData' now contains { file: File, text: string }
             console.log("Validation passed!");
             console.log("File:", validData.file.name);
-            console.log("Dealbreakers:", validData.text);
+            console.log("Dealbreakers:", validData.dealBreakers);
             
             // TODO: Call your backend service here
             // await uploadService.send(validData);
@@ -74,14 +75,35 @@ export default function BioPage() {
                     className={`border p-2 w-full max-w-md rounded 
                         ${inputError ? 'border-red-500 focus:ring-red-500' : 'border-gray-300'}`}
                 />
-                <textarea
+                {/* <textarea
                     placeholder="Enter your dealbreakers here..."
                     className="border p-2 w-full max-w-md h-32"
                     // Connects the UI to your Hook logic
                     onChange={handleDealbreakerChange}
                     // Ensures the box shows exactly what is in your state
                     value={dealBreakers}
-                ></textarea>
+                ></textarea> */}
+                <div className="space-y-4">
+                    {dealBreakers.map((text, index) => (
+                        <div key={index} className="w-full">
+                            <input
+                                type="text"
+                                placeholder={`Dealbreaker #${index + 1}`}
+                                className="border p-3 w-full rounded focus:ring-2 focus:ring-blue-500 outline-none"
+                                value={text}
+                                // The hook prevents typing past the limit
+                                onChange={(e) => handleDealbreakerChange(index, e.target.value)}
+                            />
+                            
+                            {/* Character Counter */}
+                            <div className={`text-xs text-right mt-1 ${
+                                text.length === MAX_TEXT_LENGTH ? 'text-red-500 font-bold' : 'text-gray-400'
+                            }`}>
+                                {text.length} / {MAX_TEXT_LENGTH}
+                            </div>
+                        </div>
+                    ))}
+                </div>
                 <Button
                     variant="primary"
                     onClick={handleUpload}

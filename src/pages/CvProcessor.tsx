@@ -1,3 +1,6 @@
+// functions to handle CV file and dealbreaker text input with validation
+// Manages state, validation, and error messages
+// Used by BioPage.tsx
 import { useState, type ChangeEvent } from 'react';
 
 // --- Constants ---
@@ -9,11 +12,15 @@ const ALLOWED_TYPES = [
     'application/msword', 
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
 ];
+export interface BioData {
+    file: File;
+    dealBreakers: string[]; 
+}
 
 export const useBioInputHandler = () => {
     // --- Temporary Local State ---
     const [cvFile, setCvFile] = useState<File | null>(null);
-    const [dealBreakers, setDealBreakers] = useState<string>("");
+    const [dealBreakers, setDealBreakers] = useState<string[]>(Array(5).fill(""));
     
     // --- Error State ---
     const [inputError, setInputError] = useState<string | null>(null);
@@ -42,20 +49,21 @@ export const useBioInputHandler = () => {
     };
 
     // 2. Handle Text Input (Length Constraint)
-    const handleDealbreakerChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-        const text = e.target.value;
+    const handleDealbreakerChange = (index: number, value: string) => {
+
+        // Removed the "if (value.length <= MAX)" block.
+        // This lets the user type 150 chars, see the error, and fix it.
         
-        // Only update if within limit
-        if (text.length >= MAX_TEXT_LENGTH) {
-            setInputError(`Input must be less than ${MAX_TEXT_LENGTH} characters.`);
-                return; 
-        }
-        setDealBreakers(text);
+        if (inputError) setInputError(null); // Clear error on edit
+        
+        const updatedList = [...dealBreakers];
+        updatedList[index] = value;
+        setDealBreakers(updatedList);
     };
 
     // 3. Final Verification (Call this when user clicks "Upload/Next")
     // Returns the data if valid, or null if invalid
-    const verifyAndStageInputs = (): { file: File; text: string } | null => {
+    const verifyAndStageInputs = (): BioData | null => {
         setInputError(null);
 
         // Constraint: File is mandatory
@@ -64,13 +72,22 @@ export const useBioInputHandler = () => {
             return null;
         }
 
-        // Constraint: Dealbreakers can be empty, but we already enforced max length in the handler.
-        // Can add minimum length requirements, but would need to test for empty case first & then length
-        
+        // Constraint: Dealbreakers can be empty, but enforce max length here.
+        // We look for ANY item in the array that exceeds the limit
+        const hasLengthViolation = dealBreakers.some(text => text.length > MAX_TEXT_LENGTH);
+        if (hasLengthViolation) {
+            setInputError(`One or more dealbreakers exceed the ${MAX_TEXT_LENGTH} character limit. Please shorten them.`);
+            return null;
+        }
+        // We only want to send actual text, not empty strings
+        const cleanedDealBreakers = dealBreakers
+            .map(d => d.trim())
+            .filter(d => d !== "");
+
         // Return valid data object to be passed to backend logic
         return {
             file: cvFile,
-            text: dealBreakers
+            dealBreakers: cleanedDealBreakers
         };
     };
 
