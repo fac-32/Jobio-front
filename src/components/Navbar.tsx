@@ -2,6 +2,9 @@ import { NavLink } from 'react-router-dom';
 import { Button } from './ui/Button';
 import logo from '../assets/logo.png';
 
+const username = localStorage.getItem('user_name');
+const isLoggedIn = !!localStorage.getItem('token');
+
 export default function Navbar() {
     return (
         <header
@@ -42,9 +45,28 @@ export default function Navbar() {
                         Match
                     </NavLink>
 
-                    <NavLink to="/sign-in">
-                        <Button variant="outline">Sign In</Button>
-                    </NavLink>
+                    {isLoggedIn ? (
+                        <div className="flex items-center space-x-3">
+                            <span className="text-slate-700 font-medium">
+                                {username}
+                            </span>
+
+                            <button
+                                onClick={() => {
+                                    localStorage.removeItem('token');
+                                    localStorage.removeItem('user_name');
+                                    window.location.href = '/';
+                                }}
+                                className="text-sm text-red-500 hover:underline"
+                            >
+                                Logout
+                            </button>
+                        </div>
+                    ) : (
+                        <NavLink to="/sign-in">
+                            <Button variant="outline">Sign In</Button>
+                        </NavLink>
+                    )}
                 </nav>
             </div>
         </header>

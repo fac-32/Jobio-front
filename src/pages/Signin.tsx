@@ -105,8 +105,18 @@ async function handleSignin(email: string, password: string) {
         const token = data.session?.access_token;
         if (!token) throw new Error('No token returned');
 
+        // Save token
         localStorage.setItem('token', token);
 
+        // ⭐ Save username (either metadata.name or fallback: email prefix)
+        const username =
+            data.user?.user_metadata?.name || data.user?.email?.split('@')[0];
+
+        localStorage.setItem('user_name', username);
+
+        console.log('Signed in successfully:', data);
+
+        // Redirect
         window.location.href = '/match';
     } catch (err) {
         console.error('Login failed:', err);
@@ -123,7 +133,6 @@ async function handleSignUp(name: string, email: string, password: string) {
         console.log('Sign up successful:', data);
 
         // ⚠ Important: Supabase does NOT return a session until email is verified
-        await handleSignin(email, password);
     } catch (err) {
         console.error('Signup failed:', err);
     }
