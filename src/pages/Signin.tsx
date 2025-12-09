@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import { api } from '../lib/api';
 
 export default function SignIn() {
+    const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [repeatPassword, setRepeatPassword] = useState('');
@@ -13,7 +15,16 @@ export default function SignIn() {
             </h1>
 
             <div className="w-full max-w-sm space-y-4">
-                {/* Email */}
+                {newUser && (
+                    <input
+                        type="text"
+                        placeholder="Full Name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+                    />
+                )}
+
                 <input
                     type="email"
                     placeholder="Email"
@@ -22,13 +33,11 @@ export default function SignIn() {
                     className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
                 />
 
-                {/* Password */}
                 <PwInput
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                 />
 
-                {/* Repeat password (only for sign-up) */}
                 {newUser && (
                     <PwInput
                         placeholder="Repeat Password"
@@ -37,23 +46,27 @@ export default function SignIn() {
                     />
                 )}
 
-                {/* Submit button */}
                 <button
                     onClick={() => {
                         if (!validateEmail(email)) {
                             console.log('invalid email input');
                             return;
                         }
+
                         if (!newUser) {
                             if (password.length < 1) {
                                 console.log('missing pw input');
                                 return;
                             }
                             handleSignin(email, password);
-                            setEmail('');
-                            setPassword('');
                             return;
                         }
+
+                        if (name.trim().length < 2) {
+                            console.log('Name too short');
+                            return;
+                        }
+
                         if (
                             password.length < 6 ||
                             password !== repeatPassword
@@ -61,16 +74,14 @@ export default function SignIn() {
                             console.log('password problem');
                             return;
                         }
-                        handleSignUp(email, password);
-                        setEmail('');
-                        setPassword('');
+
+                        handleSignUp(name, email, password);
                     }}
                     className="w-full bg-indigo-600 text-white py-2 rounded-lg font-medium hover:bg-indigo-700 transition cursor-pointer"
                 >
                     {newUser ? 'Create Account' : 'Sign In'}
                 </button>
 
-                {/* Toggle between sign in / sign up */}
                 <button
                     onClick={() => setNewUser(!newUser)}
                     className="w-full text-indigo-600 hover:underline text-sm mt-2"
@@ -84,12 +95,38 @@ export default function SignIn() {
     );
 }
 
-function handleSignin(email: string, password: string) {
-    console.log('sign in:', email, password);
+async function handleSignin(email: string, password: string) {
+    try {
+        const data = await api('/auth/login', {
+            method: 'POST',
+            body: JSON.stringify({ email, password }),
+        });
+
+        const token = data.session?.access_token;
+        if (!token) throw new Error('No token returned');
+
+        localStorage.setItem('token', token);
+
+        window.location.href = '/match';
+    } catch (err) {
+        console.error('Login failed:', err);
+    }
 }
 
-function handleSignUp(email: string, password: string) {
-    console.log('sign up:', email, password);
+async function handleSignUp(name: string, email: string, password: string) {
+    try {
+        const data = await api('/auth/register', {
+            method: 'POST',
+            body: JSON.stringify({ name, email, password }),
+        });
+
+        console.log('Sign up successful:', data);
+
+        // ⚠ Important: Supabase does NOT return a session until email is verified
+        await handleSignin(email, password);
+    } catch (err) {
+        console.error('Signup failed:', err);
+    }
 }
 
 function validateEmail(email: string) {
