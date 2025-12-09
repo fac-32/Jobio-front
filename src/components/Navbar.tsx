@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import { Button } from './ui/Button';
+import logo from '../assets/logo.png';
 
 export default function Navbar() {
     return (
@@ -15,7 +16,7 @@ export default function Navbar() {
                     to="/"
                     className="text-xl font-bold text-indigo-600 tracking-wide"
                 >
-                    Jobio
+                    <img src={logo} alt="Jobio Logo" className="h-10 w-auto" />
                 </NavLink>
 
                 <nav className="flex items-center space-x-4">
