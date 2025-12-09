@@ -30,6 +30,17 @@ export default function Navbar() {
                         Home
                     </NavLink>
 
+                    {/* BioPage link */}
+                    <NavLink
+                        to="/bio"
+                        className={({ isActive }) =>
+                            isActive
+                                ? 'text-indigo-600 font-medium'
+                                : 'text-gray-600 hover:text-indigo-600'
+                        }
+                    >
+                        Bio
+                    </NavLink>
                     <NavLink
                         to="/match"
                         className={({ isActive }) =>

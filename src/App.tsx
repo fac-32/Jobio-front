@@ -8,9 +8,10 @@ import MainLayout from './layout/MainLayout';
 // when creating a new page
 // 1. do lazy import as follow
 // 2. add a nav link
-// 3. add a Route inside the Routes blcok, make sure the path matches with Link
+// 3. add a Route inside the Routes block, make sure the path matches with Link
 
-const Home = lazy(() => import('./pages/Home'));
+const Home = lazy(() => import('./pages/home'));
+const BioPage = lazy(() => import('./pages/BioPage'));
 const MatchPage = lazy(() => import('./pages/MatchPage/MatchPage'));
 const SignIn = lazy(() => import('./pages/Signin'));
 
@@ -21,6 +22,7 @@ export default function App() {
                 <Routes>
                     <Route element={<MainLayout />}>
                         <Route path="/" element={<Home />} />
+                        <Route path="/bio" element={<BioPage />} />
                         <Route path="/match" element={<MatchPage />} />
                         <Route path="/sign-in" element={<SignIn />} />
                     </Route>
