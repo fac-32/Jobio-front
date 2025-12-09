@@ -1,6 +1,4 @@
-
 export default function ConfirmEmail() {
-    
     return (
         <div className="flex flex-col items-center mt-10 px-4">
             <h1 className="text-3xl font-bold text-indigo-600 mb-6">
