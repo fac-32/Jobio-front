@@ -1,5 +1,6 @@
 import { Button } from '../../components/ui/Button';
 import { useBioInputHandler } from './CvProcessor';
+import { api } from '../../lib/api';
 const MAX_TEXT_LENGTH = 50;
 
 // BioPage: allows user to upload their bio, including a CV file and
@@ -31,7 +32,10 @@ export default function BioPage() {
             // await uploadService.send(validData);
             const form = new FormData();
             form.append('cv', validData.file, validData.file.name);
-            fetch('http://localhost:3000/upload-cv', {
+            api('/upload-cv', {
+                headers: {
+                    /* This is set up to override the default "Content-Type" in lib/api.ts */
+                },
                 method: 'POST',
                 body: form,
             });
