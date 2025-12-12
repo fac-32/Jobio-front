@@ -83,7 +83,7 @@ export default function BioPage() {
                 {/* File input for CV upload - only accept PDF or Word documents */}
                 <input
                     type="file"
-                    accept=".pdf,.doc,.docx"
+                    accept=".pdf,.docx,.txt"
                     // className="border p-2 w-full max-w-md"
                     // Connects the UI to your Hook logic
                     onChange={handleFileChange}
