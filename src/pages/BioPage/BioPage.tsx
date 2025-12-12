@@ -1,4 +1,4 @@
-import { Button } from '../components/ui/Button';
+import { Button } from '../../components/ui/Button';
 import { useBioInputHandler } from './CvProcessor';
 const MAX_TEXT_LENGTH = 50;
 

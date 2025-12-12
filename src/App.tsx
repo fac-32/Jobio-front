@@ -11,7 +11,7 @@ import MainLayout from './layout/MainLayout';
 // 3. add a Route inside the Routes block, make sure the path matches with Link
 
 const Home = lazy(() => import('./pages/home'));
-const BioPage = lazy(() => import('./pages/BioPage'));
+const BioPage = lazy(() => import('./pages/BioPage/BioPage'));
 const MatchPage = lazy(() => import('./pages/MatchPage/MatchPage'));
 const SignIn = lazy(() => import('./pages/Signin'));
 const ConfirmEmail = lazy(() => import('./pages/ConfirmEmail'));
