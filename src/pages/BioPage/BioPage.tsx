@@ -39,6 +39,18 @@ export default function BioPage() {
                 method: 'POST',
                 body: form,
             });
+            api('/users_dealbreakers', {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer AUTH-TOKEN-HERE', // Replace with actual token to test
+                    'Content-Type': 'application/json',
+                },
+
+                body: JSON.stringify({
+                    user_id: 9 /* hard coded placeholder */,
+                    dealbreakers: validData.dealBreakers,
+                }),
+            });
         } else {
             console.log('Validation failed');
         }
