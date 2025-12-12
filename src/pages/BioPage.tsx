@@ -29,6 +29,12 @@ export default function BioPage() {
 
             // TODO: Call your backend service here
             // await uploadService.send(validData);
+            const form = new FormData();
+            form.append('cv', validData.file, validData.file.name);
+            fetch('http://localhost:3000/upload-cv', {
+                method: 'POST',
+                body: form,
+            });
         } else {
             console.log('Validation failed');
         }
