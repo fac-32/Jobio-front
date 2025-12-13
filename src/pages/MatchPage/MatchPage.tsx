@@ -1,39 +1,116 @@
+// // src/pages/MatchPage/MatchPage.tsx
+// import JobAdPanel from './JobAdPanel';
+// import MatchResultPanel from './MatchResultPanel';
+
+// const mockJobAd = {
+//     title: 'Frontend Developer',
+//     company: 'TechCorp',
+//     location: 'Remote',
+//     description: `
+// We are looking for a Frontend Developer skilled in React, TypeScript, and modern UI frameworks.
+
+// Responsibilities:
+// • Build responsive UI
+// • Collaborate with designers
+// • Improve frontend performance
+
+// Required:
+// • React experience
+// • REST API knowledge
+
+// Nice to have:
+// • Tailwind CSS
+// • CI/CD experience
+// `,
+// };
+
+// export default function MatchPage() {
+//     return (
+//         <div className="flex h-screen">
+//             <div className="w-1/2 bg-white">
+//                 <JobAdPanel jobAd={mockJobAd} />
+//             </div>
+
+//             <div className="w-1/2 bg-gray-50">
+//                 <MatchResultPanel />
+//             </div>
+//         </div>
+//     );
+// }
+
+
 // src/pages/MatchPage/MatchPage.tsx
-import JobAdPanel from './JobAdPanel';
-import MatchResultPanel from './MatchResultPanel';
+import { useState } from 'react';
+import { matchJob, type MatchResult } from '../../lib/api';
+import { JobAdPanel } from './JobAdPanel';
+import { MatchResultPanel } from './MatchResultPanel';
+// import { UploadCVButton } from './UploadCVButton';
+// import { DealBreakersModal } from './DealBreakersModal';
+// import './MatchPage.css';
 
-const mockJobAd = {
-    title: 'Frontend Developer',
-    company: 'TechCorp',
-    location: 'Remote',
-    description: `
-We are looking for a Frontend Developer skilled in React, TypeScript, and modern UI frameworks.
+function MatchPage() {
+  // React "memory"
+  const [jobDescription, setJobDescription] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [result, setResult] = useState<MatchResult | null>(null);
 
-Responsibilities:
-• Build responsive UI
-• Collaborate with designers
-• Improve frontend performance
+  // Temporary: assume your login stored the token like this
+  const token = localStorage.getItem('token') ?? '';
 
-Required:
-• React experience
-• REST API knowledge
+  const handleMatch = async () => {
+    setError(null);
+    setResult(null);
 
-Nice to have:
-• Tailwind CSS
-• CI/CD experience
-`,
-};
+    if (!jobDescription.trim()) {
+      setError('Please paste a job description first.');
+      return;
+    }
+    if (!token) {
+      setError('You must be signed in to use matching.');
+      return;
+    }
 
-export default function MatchPage() {
-    return (
-        <div className="flex h-screen">
-            <div className="w-1/2 bg-white">
-                <JobAdPanel jobAd={mockJobAd} />
-            </div>
+    setLoading(true);
+    try {
+      const data = await matchJob({ jobDescription, token });
+      setResult(data);
+    } catch (err) {
+        console.error(err);
+        if (err instanceof Error) {
+        setError(err.message);
+        } else {
+        setError('Error while calling matching API.');
+        }
+    } finally {
 
-            <div className="w-1/2 bg-gray-50">
-                <MatchResultPanel />
-            </div>
-        </div>
-    );
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="match-page">
+      <main className="match-layout">
+        <section className="match-left">
+          {/* <UploadCVButton /> */}
+          {/* <DealBreakersModal /> */}
+
+          <JobAdPanel
+            jobDescription={jobDescription}
+            onChange={setJobDescription}
+            onMatchClick={handleMatch}
+            loading={loading}
+          />
+
+          {error && <p className="match-error">{error}</p>}
+        </section>
+
+        <section className="match-right">
+          <MatchResultPanel loading={loading} result={result} />
+        </section>
+      </main>
+    </div>
+  );
 }
+
+export default MatchPage;
