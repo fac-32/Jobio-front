@@ -32,7 +32,13 @@ export default function BioPage() {
             // await uploadService.send(validData);
             const form = new FormData();
             form.append('cv', validData.file, validData.file.name);
-            api('/upload-cv', {
+            form.append('user_id', `${localStorage.getItem('user_id')}`);
+            // append cv_keywords is a placeholder
+            form.append(
+                'cv_keywords',
+                JSON.stringify(['anson working on integration']),
+            );
+            api('/users_cvs/upload', {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('token')}`,
                 },
