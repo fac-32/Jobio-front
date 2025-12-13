@@ -34,7 +34,7 @@ export default function BioPage() {
             form.append('cv', validData.file, validData.file.name);
             api('/upload-cv', {
                 headers: {
-                    /* This is set up to override the default "Content-Type" in lib/api.ts */
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
                 },
                 method: 'POST',
                 body: form,
@@ -42,7 +42,7 @@ export default function BioPage() {
             api('/users_dealbreakers', {
                 method: 'POST',
                 headers: {
-                    Authorization: 'Bearer AUTH-TOKEN-HERE', // Replace with actual token to test
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
                     'Content-Type': 'application/json',
                 },
 
