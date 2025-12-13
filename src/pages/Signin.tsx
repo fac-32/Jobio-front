@@ -112,7 +112,7 @@ async function handleSignin(email: string, password: string) {
         const usersData = await api(`/users?email=${email}`, {
             method: 'GET',
             headers: {
-                Authorization: `Bearer ${token}`, 
+                Authorization: `Bearer ${token}`,
             },
         });
 
