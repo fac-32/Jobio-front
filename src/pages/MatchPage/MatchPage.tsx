@@ -89,9 +89,9 @@ function MatchPage() {
   };
 
   return (
-    <div className="match-page">
-      <main className="match-layout">
-        <section className="match-left">
+    <div className="flex h-screen">
+      {/* <main className="match-layout"> */}
+        <div className="w-1/2 bg-white p-4 flex flex-col">
           {/* <UploadCVButton /> */}
           {/* <DealBreakersModal /> */}
 
@@ -103,12 +103,12 @@ function MatchPage() {
           />
 
           {error && <p className="match-error">{error}</p>}
-        </section>
+        </div>
 
-        <section className="match-right">
+        <div className="w-1/2 bg-gray-50 p-4 overflow-auto">
           <MatchResultPanel loading={loading} result={result} />
-        </section>
-      </main>
+        </div>
+      {/* </main> */}
     </div>
   );
 }
