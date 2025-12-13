@@ -38,7 +38,7 @@ export default function BioPage() {
                 'cv_keywords',
                 JSON.stringify(['anson working on integration']),
             );
-            api('/users_cvs/upload', {
+            api('/users_cvs', {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('token')}`,
                 },
