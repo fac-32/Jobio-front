@@ -53,7 +53,7 @@ export default function BioPage() {
                 },
 
                 body: JSON.stringify({
-                    user_id: 9 /* hard coded placeholder */,
+                    user_id: localStorage.getItem('user_id'),
                     dealbreakers: validData.dealBreakers,
                 }),
             });
