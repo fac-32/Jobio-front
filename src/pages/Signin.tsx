@@ -105,10 +105,26 @@ async function handleSignin(email: string, password: string) {
         const token = data.session?.access_token;
         if (!token) throw new Error('No token returned');
 
-        // Save token
+        // Save token in local storage
         localStorage.setItem('token', token);
 
-        // ⭐ Save username (either metadata.name or fallback: email prefix)
+        // Get user with matching email
+        const usersData = await api(`/users?email=${email}`, {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${token}`, 
+            },
+        });
+
+        if (usersData.length === 0) {
+            console.log('No user found with matching email');
+            return;
+        }
+
+        // Save user id in local storage
+        localStorage.setItem('user_id', usersData[0].id);
+
+        // Save username (either metadata.name or fallback: email prefix)
         const username =
             data.user?.user_metadata?.name || data.user?.email?.split('@')[0];
 
