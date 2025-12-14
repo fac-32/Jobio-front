@@ -9,12 +9,12 @@ export default function Home() {
 
             <p className="text-lg text-slate-600 max-w-xl mb-10">
                 Your AI-powered job matching assistant. Upload your CV, paste in
-                job ads, and get personalised match insights from our mascot Jobbie.
+                job ads, and get personalised match insights from our mascot
+                Jobbie.
             </p>
 
             <div className="">
-                <img src={MascotImages.idle} width={300}
-                 alt="Waving Jobbie" />
+                <img src={MascotImages.idle} width={300} alt="Waving Jobbie" />
             </div>
         </div>
     );
