@@ -127,41 +127,48 @@
 //     );
 // }
 
-
-
 // src/pages/MatchPage/JobAdPanel.tsx
 type Props = {
-  jobDescription: string;
-  onChange: (value: string) => void;
-  onMatchClick: () => void;
-  loading: boolean;
+    jobDescription: string;
+    onChange: (value: string) => void;
+    onMatchClick: () => void;
+    loading: boolean;
 };
 
-export function JobAdPanel({ jobDescription, onChange, onMatchClick, loading }: Props) {
-  return (
-    <div>
-      <h2>Job ad</h2>
-      <textarea
-        style={{ width: '100%', minHeight: '260px', marginBottom: '1rem' }}
-        value={jobDescription}
-        onChange={e => onChange(e.target.value)}
-        placeholder="Paste the job description here…"
-      />
-      <button
-        onClick={onMatchClick}
-        disabled={loading}
-        style={{
-          padding: '0.6rem 1.4rem',
-          borderRadius: 999,
-          border: 'none',
-          backgroundColor: '#6d28d9',
-          color: 'white',
-          fontWeight: 600,
-          cursor: loading ? 'default' : 'pointer',
-        }}
-      >
-        {loading ? 'Matching…' : 'Match Me'}
-      </button>
-    </div>
-  );
+export function JobAdPanel({
+    jobDescription,
+    onChange,
+    onMatchClick,
+    loading,
+}: Props) {
+    return (
+        <div>
+            <h2>Job ad</h2>
+            <textarea
+                style={{
+                    width: '100%',
+                    minHeight: '260px',
+                    marginBottom: '1rem',
+                }}
+                value={jobDescription}
+                onChange={(e) => onChange(e.target.value)}
+                placeholder="Paste the job description here…"
+            />
+            <button
+                onClick={onMatchClick}
+                disabled={loading}
+                style={{
+                    padding: '0.6rem 1.4rem',
+                    borderRadius: 999,
+                    border: 'none',
+                    backgroundColor: '#6d28d9',
+                    color: 'white',
+                    fontWeight: 600,
+                    cursor: loading ? 'default' : 'pointer',
+                }}
+            >
+                {loading ? 'Matching…' : 'Match Me'}
+            </button>
+        </div>
+    );
 }

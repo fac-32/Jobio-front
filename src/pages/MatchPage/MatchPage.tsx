@@ -38,7 +38,6 @@
 //     );
 // }
 
-
 // src/pages/MatchPage/MatchPage.tsx
 import { useState } from 'react';
 import { matchJob, type MatchResult } from '../../lib/api';
@@ -49,68 +48,67 @@ import { MatchResultPanel } from './MatchResultPanel';
 // import './MatchPage.css';
 
 function MatchPage() {
-  // React "memory"
-  const [jobDescription, setJobDescription] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<MatchResult | null>(null);
+    // React "memory"
+    const [jobDescription, setJobDescription] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [result, setResult] = useState<MatchResult | null>(null);
 
-  // Temporary: assume your login stored the token like this
-  const token = localStorage.getItem('token') ?? '';
+    // Temporary: assume your login stored the token like this
+    const token = localStorage.getItem('token') ?? '';
 
-  const handleMatch = async () => {
-    setError(null);
-    setResult(null);
+    const handleMatch = async () => {
+        setError(null);
+        setResult(null);
 
-    if (!jobDescription.trim()) {
-      setError('Please paste a job description first.');
-      return;
-    }
-    if (!token) {
-      setError('You must be signed in to use matching.');
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const data = await matchJob({ jobDescription, token });
-      setResult(data);
-    } catch (err) {
-        console.error(err);
-        if (err instanceof Error) {
-        setError(err.message);
-        } else {
-        setError('Error while calling matching API.');
+        if (!jobDescription.trim()) {
+            setError('Please paste a job description first.');
+            return;
         }
-    } finally {
+        if (!token) {
+            setError('You must be signed in to use matching.');
+            return;
+        }
 
-      setLoading(false);
-    }
-  };
+        setLoading(true);
+        try {
+            const data = await matchJob({ jobDescription, token });
+            setResult(data);
+        } catch (err) {
+            console.error(err);
+            if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError('Error while calling matching API.');
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
 
-  return (
-    <div className="flex h-screen">
-      {/* <main className="match-layout"> */}
-        <div className="w-1/2 bg-white p-4 flex flex-col">
-          {/* <UploadCVButton /> */}
-          {/* <DealBreakersModal /> */}
+    return (
+        <div className="flex h-screen">
+            {/* <main className="match-layout"> */}
+            <div className="w-1/2 bg-white p-4 flex flex-col">
+                {/* <UploadCVButton /> */}
+                {/* <DealBreakersModal /> */}
 
-          <JobAdPanel
-            jobDescription={jobDescription}
-            onChange={setJobDescription}
-            onMatchClick={handleMatch}
-            loading={loading}
-          />
+                <JobAdPanel
+                    jobDescription={jobDescription}
+                    onChange={setJobDescription}
+                    onMatchClick={handleMatch}
+                    loading={loading}
+                />
 
-          {error && <p className="match-error">{error}</p>}
+                {error && <p className="match-error">{error}</p>}
+            </div>
+
+            <div className="w-1/2 bg-gray-50 p-4 overflow-auto">
+                <MatchResultPanel loading={loading} result={result} />
+            </div>
+            {/* </main> */}
         </div>
-
-        <div className="w-1/2 bg-gray-50 p-4 overflow-auto">
-          <MatchResultPanel loading={loading} result={result} />
-        </div>
-      {/* </main> */}
-    </div>
-  );
+    );
 }
 
 export default MatchPage;
