@@ -21,3 +21,37 @@ We are here to help saving your time going through countless number of pages of 
 3. A small matching summary
 4. List of matched and missing skills
 5. Short conclusion message at the end suggesting if you should apply for it of not
+
+# How to run it locally
+
+1. Clone the repo and install dependencies
+
+```bash
+git clone git@github.com:fac-32/Jobio-front.git
+npm i
+```
+
+2. you can choose to run a dev server,
+
+```bash
+npm run dev
+```
+
+Or run it in production.
+
+```bash
+npm run build
+npx serve dist
+```
+
+Running the `build` command will auto matically generate the `/dist` files for you.
+
+# Tech stack
+
+**Bundler**: Vite
+**Framework**: React
+**Language**: Typescript
+**Frontend router**: React Router
+**Testing**: Vitest
+**CSS Framework**: Tailwind
+**Deployment**: Render
