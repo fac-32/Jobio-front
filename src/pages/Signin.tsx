@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { api } from '../lib/api';
+import { MascotImages } from '../assets/mascotImages';
 
 export default function SignIn() {
     const [name, setName] = useState('');
@@ -9,7 +10,7 @@ export default function SignIn() {
     const [newUser, setNewUser] = useState(false);
 
     return (
-        <div className="flex flex-col items-center mt-10 px-4">
+        <div className="flex flex-col items-center justify-center mt-10 px-4">
             <h1 className="text-3xl font-bold text-indigo-600 mb-6">
                 {newUser ? 'Create Account' : 'Sign In'}
             </h1>
@@ -90,6 +91,14 @@ export default function SignIn() {
                         ? 'Have an account? Sign In'
                         : "Don't have an account? Sign Up"}
                 </button>
+
+                <div className="flex justify-center">
+                    <img
+                        src={MascotImages.curious}
+                        width={300}
+                        alt="Curious Jobbie"
+                    />
+                </div>
             </div>
         </div>
     );
