@@ -1,6 +1,6 @@
 # Jobio
 
-![Mascot of Jobio waving greetings.](/src/assets/jobbie_idle.webp)
+![Mascot of Jobio waving greetings.](/src/assets/mascotImages/jobbie_idle.png)
 
 Jobio's mission is to help matching job seekers with jobs that are suitable for them.
 
