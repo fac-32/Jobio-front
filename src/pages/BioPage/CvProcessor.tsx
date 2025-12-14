@@ -9,8 +9,8 @@ const MAX_FILE_SIZE_MB = 5;
 const MAX_TEXT_LENGTH = 50;
 const ALLOWED_TYPES = [
     'application/pdf',
-    'application/msword',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document' /*this is .docx*/,
+    'text/plain',
 ];
 
 export interface BioData {

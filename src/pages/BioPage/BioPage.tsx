@@ -1,5 +1,6 @@
-import { Button } from '../components/ui/Button';
+import { Button } from '../../components/ui/Button';
 import { useBioInputHandler } from './CvProcessor';
+import { api } from '../../lib/api';
 const MAX_TEXT_LENGTH = 50;
 
 // BioPage: allows user to upload their bio, including a CV file and
@@ -29,6 +30,33 @@ export default function BioPage() {
 
             // TODO: Call your backend service here
             // await uploadService.send(validData);
+            const form = new FormData();
+            form.append('cv', validData.file, validData.file.name);
+            form.append('user_id', `${localStorage.getItem('user_id')}`);
+            // append cv_keywords is a placeholder
+            form.append(
+                'cv_keywords',
+                JSON.stringify(['anson working on integration']),
+            );
+            api('/users_cvs', {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
+                method: 'POST',
+                body: form,
+            });
+            api('/users_dealbreakers', {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                    'Content-Type': 'application/json',
+                },
+
+                body: JSON.stringify({
+                    user_id: localStorage.getItem('user_id'),
+                    dealbreakers: validData.dealBreakers,
+                }),
+            });
         } else {
             console.log('Validation failed');
         }
@@ -77,7 +105,7 @@ export default function BioPage() {
                 {/* File input for CV upload - only accept PDF or Word documents */}
                 <input
                     type="file"
-                    accept=".pdf,.doc,.docx"
+                    accept=".pdf,.docx,.txt"
                     // className="border p-2 w-full max-w-md"
                     // Connects the UI to your Hook logic
                     onChange={handleFileChange}
