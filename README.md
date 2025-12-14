@@ -48,10 +48,10 @@ Running the `build` command will auto matically generate the `/dist` files for y
 
 # Tech stack
 
-**Bundler**: Vite
-**Framework**: React
-**Language**: Typescript
-**Frontend router**: React Router
-**Testing**: Vitest
-**CSS Framework**: Tailwind
-**Deployment**: Render
+- **Bundler**: Vite
+- **Framework**: React
+- **Language**: Typescript
+- **Frontend router**: React Router
+- **Testing**: Vitest
+- **CSS Framework**: Tailwind
+- **Deployment**: Render
