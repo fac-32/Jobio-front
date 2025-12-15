@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { api } from '../lib/api';
 import { MascotImages } from '../assets/mascotImages';
+import { Eye, EyeOff } from 'lucide-react';
 
 export default function SignIn() {
     const [name, setName] = useState('');
@@ -257,13 +258,30 @@ type PwInputProps = {
 };
 
 function PwInput({ placeholder, value, onChange }: PwInputProps) {
+    const [visible, setVisible] = useState(false);
+
     return (
-        <input
-            type="password"
-            placeholder={placeholder || 'Password'}
-            value={value}
-            onChange={onChange}
-            className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
-        />
+        <div className="relative">
+            <input
+                type={visible ? 'text' : 'password'}
+                placeholder={placeholder || 'Password'}
+                value={value}
+                onChange={onChange}
+                className="w-full border border-slate-300 rounded-lg px-4 py-2 pr-10 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+            />
+
+            <button
+                type="button"
+                onClick={() => setVisible(!visible)}
+                className="absolute inset-y-0 right-3 flex items-center text-slate-500 hover:text-slate-700"
+                aria-label={visible ? 'Hide password' : 'Show password'}
+            >
+                {visible ? (
+                    <EyeOff className="cursor-pointer" size={18} />
+                ) : (
+                    <Eye className="cursor-pointer" size={18} />
+                )}
+            </button>
+        </div>
     );
 }
