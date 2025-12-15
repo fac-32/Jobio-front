@@ -2,7 +2,7 @@
 // Manages state, validation, and error messages
 // Used by BioPage.tsx
 import { useState, useEffect, type ChangeEvent } from 'react';
-import { bioService } from '../../services/bioService'; // Ensure this path matches where you put bioService.ts
+import { bioService } from './bioService'; // Ensure this path matches where you put bioService.ts
 import { useNavigate } from 'react-router-dom'; // Import router to redirect if user not signed-in
 
 // --- Constants ---
