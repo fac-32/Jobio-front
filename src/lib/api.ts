@@ -1,18 +1,19 @@
-const BASE_URL = 'http://localhost:3000';
-
-export async function api(path: string, options: RequestInit = {}) {
-    const res = await fetch(BASE_URL + path, {
+export async function api(url: string, options?: RequestInit) {
+    const res = await fetch(`http://localhost:3000${url}`, {
         headers: {
             'Content-Type': 'application/json',
-            ...options.headers,
+            ...options?.headers,
         },
         ...options,
     });
 
+    const data = await res.json();
+
     if (!res.ok) {
-        const error = await res.text();
-        throw new Error(error);
+        const error: any = new Error(data?.error || 'Request failed');
+        error.status = res.status;
+        throw error;
     }
 
-    return res.json();
+    return data;
 }

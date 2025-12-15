@@ -8,6 +8,9 @@ export default function SignIn() {
     const [password, setPassword] = useState('');
     const [repeatPassword, setRepeatPassword] = useState('');
     const [newUser, setNewUser] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [emailError, setEmailError] = useState(false);
 
     return (
         <div className="flex flex-col items-center justify-center mt-10 px-4">
@@ -30,8 +33,18 @@ export default function SignIn() {
                     type="email"
                     placeholder="Email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+                    onChange={(e) => {
+                        setEmail(e.target.value);
+                        setEmailError(false);
+                        setError(null);
+                    }}
+                    className={`w-full rounded-lg px-4 py-2 outline-none border
+        ${
+            emailError
+                ? 'border-red-500 ring-2 ring-red-500'
+                : 'border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500'
+        }
+    `}
                 />
 
                 <PwInput
@@ -47,16 +60,26 @@ export default function SignIn() {
                     />
                 )}
 
+                {error && (
+                    <p className="text-red-600 text-sm text-center">{error}</p>
+                )}
+
                 <button
+                    disabled={loading}
                     onClick={() => {
+                        if (loading) return;
+
                         if (!validateEmail(email)) {
-                            console.log('invalid email input');
+                            setError('Please enter a valid email address.');
+                            setEmailError(true);
                             return;
+                        } else {
+                            setEmailError(false);
                         }
 
                         if (!newUser) {
                             if (password.length < 1) {
-                                console.log('missing pw input');
+                                setError('Please enter your password.');
                                 return;
                             }
                             handleSignin(email, password);
@@ -64,7 +87,7 @@ export default function SignIn() {
                         }
 
                         if (name.trim().length < 2) {
-                            console.log('Name too short');
+                            setError('Name is too short.');
                             return;
                         }
 
@@ -72,15 +95,34 @@ export default function SignIn() {
                             password.length < 6 ||
                             password !== repeatPassword
                         ) {
-                            console.log('password problem');
+                            setError(
+                                'Passwords do not match or are too short.',
+                            );
                             return;
                         }
 
-                        handleSignUp(name, email, password);
+                        handleSignUp(
+                            name,
+                            email,
+                            password,
+                            setError,
+                            setLoading,
+                            setEmailError,
+                        );
                     }}
-                    className="w-full bg-indigo-600 text-white py-2 rounded-lg font-medium hover:bg-indigo-700 transition cursor-pointer"
+                    className={`w-full py-2 rounded-lg font-medium transition
+        ${
+            loading
+                ? 'bg-slate-400 cursor-not-allowed'
+                : 'bg-indigo-600 hover:bg-indigo-700'
+        }
+    `}
                 >
-                    {newUser ? 'Create Account' : 'Sign In'}
+                    {loading
+                        ? 'Please wait...'
+                        : newUser
+                          ? 'Create Account'
+                          : 'Sign In'}
                 </button>
 
                 <button
@@ -148,18 +190,36 @@ async function handleSignin(email: string, password: string) {
     }
 }
 
-async function handleSignUp(name: string, email: string, password: string) {
+async function handleSignUp(
+    name: string,
+    email: string,
+    password: string,
+    setError: (msg: string) => void,
+    setLoading: (v: boolean) => void,
+    setEmailError: (v: boolean) => void,
+) {
     try {
-        const data = await api('/auth/register', {
+        setLoading(true);
+        setError(null);
+
+        await api('/auth/register', {
             method: 'POST',
             body: JSON.stringify({ name, email, password }),
         });
 
-        console.log('Sign up successful:', data);
+        console.log('Sign up successful');
+    } catch (err: any) {
+        if (err.status === 409) {
+            setError(
+                'This email is already registered. Please sign in instead.',
+            );
+            setEmailError(true);
+            return;
+        }
 
-        // ⚠ Important: Supabase does NOT return a session until email is verified
-    } catch (err) {
-        console.error('Signup failed:', err);
+        setError('Something went wrong. Please try again.');
+    } finally {
+        setLoading(false);
     }
 }
 
