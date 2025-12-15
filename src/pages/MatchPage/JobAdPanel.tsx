@@ -127,7 +127,6 @@
 //     );
 // }
 
-// src/pages/MatchPage/JobAdPanel.tsx
 type Props = {
     jobDescription: string;
     onChange: (value: string) => void;

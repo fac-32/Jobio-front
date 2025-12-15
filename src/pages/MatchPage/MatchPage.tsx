@@ -38,23 +38,20 @@
 //     );
 // }
 
-// src/pages/MatchPage/MatchPage.tsx
 import { useState } from 'react';
-import { matchJob, type MatchResult } from '../../lib/api';
+import { matchJob } from './matchApi';
+import type { MatchResult } from './types';
 import { JobAdPanel } from './JobAdPanel';
 import { MatchResultPanel } from './MatchResultPanel';
 // import { UploadCVButton } from './UploadCVButton';
 // import { DealBreakersModal } from './DealBreakersModal';
-// import './MatchPage.css';
 
 function MatchPage() {
-    // React "memory"
     const [jobDescription, setJobDescription] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [result, setResult] = useState<MatchResult | null>(null);
 
-    // Temporary: assume your login stored the token like this
     const token = localStorage.getItem('token') ?? '';
 
     const handleMatch = async () => {
@@ -88,7 +85,6 @@ function MatchPage() {
 
     return (
         <div className="flex h-screen">
-            {/* <main className="match-layout"> */}
             <div className="w-1/2 bg-white p-4 flex flex-col">
                 {/* <UploadCVButton /> */}
                 {/* <DealBreakersModal /> */}
@@ -106,7 +102,6 @@ function MatchPage() {
             <div className="w-1/2 bg-gray-50 p-4 overflow-auto">
                 <MatchResultPanel loading={loading} result={result} />
             </div>
-            {/* </main> */}
         </div>
     );
 }

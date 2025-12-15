@@ -11,9 +11,7 @@
 //     );
 // }
 
-// src/pages/MatchPage/MatchResultPanel.tsx
-
-import type { MatchResult } from '../../lib/api';
+import type { MatchResult } from './types';
 
 type Props = {
     loading: boolean;
@@ -39,7 +37,6 @@ export function MatchResultPanel({ loading, result }: Props) {
         );
     }
 
-    // Safe defaults in case some fields are missing
     const safeResult = {
         match_score: result.match_score ?? 0,
         matched_deal_breakers: result.matched_deal_breakers ?? [],
