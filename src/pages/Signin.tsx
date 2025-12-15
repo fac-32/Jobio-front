@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { api } from '../lib/api';
+import { MascotImages } from '../assets/mascotImages';
 
 export default function SignIn() {
     const [name, setName] = useState('');
@@ -9,7 +10,7 @@ export default function SignIn() {
     const [newUser, setNewUser] = useState(false);
 
     return (
-        <div className="flex flex-col items-center mt-10 px-4">
+        <div className="flex flex-col items-center justify-center mt-10 px-4">
             <h1 className="text-3xl font-bold text-indigo-600 mb-6">
                 {newUser ? 'Create Account' : 'Sign In'}
             </h1>
@@ -90,6 +91,14 @@ export default function SignIn() {
                         ? 'Have an account? Sign In'
                         : "Don't have an account? Sign Up"}
                 </button>
+
+                <div className="flex justify-center">
+                    <img
+                        src={MascotImages.curious}
+                        width={300}
+                        alt="Curious Jobbie"
+                    />
+                </div>
             </div>
         </div>
     );
@@ -105,10 +114,26 @@ async function handleSignin(email: string, password: string) {
         const token = data.session?.access_token;
         if (!token) throw new Error('No token returned');
 
-        // Save token
+        // Save token in local storage
         localStorage.setItem('token', token);
 
-        // ⭐ Save username (either metadata.name or fallback: email prefix)
+        // Get user with matching email
+        const usersData = await api(`/users?email=${email}`, {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        if (usersData.length === 0) {
+            console.log('No user found with matching email');
+            return;
+        }
+
+        // Save user id in local storage
+        localStorage.setItem('user_id', usersData[0].id);
+
+        // Save username (either metadata.name or fallback: email prefix)
         const username =
             data.user?.user_metadata?.name || data.user?.email?.split('@')[0];
 
