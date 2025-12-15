@@ -1,75 +1,57 @@
-# React + TypeScript + Vite
+# Jobio
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+![Mascot of Jobio waving greetings.](/src/assets/mascotImages/jobbie_idle.png)
 
-Currently, two official plugins are available:
+Jobio's mission is to help matching job seekers with jobs that are suitable for them.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Have you ever read a 2-page long job ad only to find it requires you to be in the office that you can't get to 5 days a week? Have you gone through another 2-page long job ad only to find it wants a junior with 5 years of proven experience that you do not have?
 
-## React Compiler
+We are here to help saving your time going through countless number of pages of job ads, only to find out at the end: it's not a job that you would apply for.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## What do we need to know to help you?
 
-## Expanding the ESLint configuration
+1. Upload your CV as a file. We currently accept `.pdf`, `.docx`, and `.txt` files.
+2. Input your "deal breakers" for a job. The currently limit is 5 deal breakers.
+3. Paste the job ad on the Matching page.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## How do we match you up with the job ad? A.k.a. what will be on the Matching page?
 
-```js
-export default defineConfig([
-    globalIgnores(['dist']),
-    {
-        files: ['**/*.{ts,tsx}'],
-        extends: [
-            // Other configs...
+1. An overall matching score
+2. Point out any deal breakers the job ad includes
+3. A small matching summary
+4. List of matched and missing skills
+5. Short conclusion message at the end suggesting if you should apply for it of not
 
-            // Remove tseslint.configs.recommended and replace with this
-            tseslint.configs.recommendedTypeChecked,
-            // Alternatively, use this for stricter rules
-            tseslint.configs.strictTypeChecked,
-            // Optionally, add this for stylistic rules
-            tseslint.configs.stylisticTypeChecked,
+# How to run it locally
 
-            // Other configs...
-        ],
-        languageOptions: {
-            parserOptions: {
-                project: ['./tsconfig.node.json', './tsconfig.app.json'],
-                tsconfigRootDir: import.meta.dirname,
-            },
-            // other options...
-        },
-    },
-]);
+1. Clone the repo and install dependencies
+
+```bash
+git clone git@github.com:fac-32/Jobio-front.git
+npm i
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+2. you can choose to run a dev server,
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x';
-import reactDom from 'eslint-plugin-react-dom';
-
-export default defineConfig([
-    globalIgnores(['dist']),
-    {
-        files: ['**/*.{ts,tsx}'],
-        extends: [
-            // Other configs...
-            // Enable lint rules for React
-            reactX.configs['recommended-typescript'],
-            // Enable lint rules for React DOM
-            reactDom.configs.recommended,
-        ],
-        languageOptions: {
-            parserOptions: {
-                project: ['./tsconfig.node.json', './tsconfig.app.json'],
-                tsconfigRootDir: import.meta.dirname,
-            },
-            // other options...
-        },
-    },
-]);
+```bash
+npm run dev
 ```
 
-#test
+Or run it in production.
+
+```bash
+npm run build
+npx serve dist
+```
+
+Running the `build` command will auto matically generate the `/dist` files for you.
+
+# Tech stack
+
+- **Bundler**: Vite
+- **Framework**: React
+- **Language**: Typescript
+- **Frontend router**: React Router
+- **Testing**: Vitest
+- **CSS Framework**: Tailwind
+- **Deployment**: Render
