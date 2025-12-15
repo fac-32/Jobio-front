@@ -7,7 +7,7 @@ const API_URL = 'http://localhost:3000';
 
 export const bioService = {
     uploadBio: async (payload: BioPayload) => {
-        // Get the token (Adjust 'token' to whatever key you use in localStorage)
+        // Get the token from localStorage
         const token = localStorage.getItem('token');
 
         if (!token) {
@@ -16,10 +16,14 @@ export const bioService = {
         // Prepare form data
         const formData = new FormData();
         formData.append('cv', payload.cv);
+        // // Backend requires 'user_id'
+        // // For testing, hardcode '1' or decode it from token??
+        // formData.append('user_id', '1');
         formData.append('dealbreakers', JSON.stringify(payload.dealBreakers));
 
         try {
-            const response = await fetch(`${API_URL}/upload-cv`, {
+            // Points to the router mounted at /users_cvs
+            const response = await fetch(`${API_URL}/users_cvs`, {
                 method: 'POST',
                 headers: {
                     // Attach the authorisation token here

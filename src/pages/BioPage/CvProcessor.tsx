@@ -33,6 +33,7 @@ export const useBioInputHandler = () => {
     const [dealBreakers, setDealBreakers] = useState<string[]>(
         Array(5).fill(''),
     );
+    const [bioKeywords, setBioKeywords] = useState<string[]>([]); // store the keywords extracted from the CV
 
     // --- UI Status State (New) ---
     // 'idle' = nothing happening
@@ -107,16 +108,23 @@ export const useBioInputHandler = () => {
 
         // --- B. Submission Phase ---
         setStatus('uploading');
+        setBioKeywords([]); // Clear previous results
 
         try {
             // Call the service (which handles the FormData conversion internally)
-            await bioService.uploadBio({
+            const result = await bioService.uploadBio({
                 cv: cvFile,
                 dealBreakers: cleanedDealBreakers,
             });
 
+            // Capture the keywords from the backend response
+            // The key 'generated_tags' matches the backend response
+            if (result.generated_tags) {
+                setBioKeywords(result.generated_tags);
+            }
+
             setStatus('success');
-            console.log('Upload complete!');
+            console.log('AI Output:', result.generated_tags); // Check console too!
         } catch (error) {
             console.error(error);
             setStatus('error');
@@ -133,6 +141,7 @@ export const useBioInputHandler = () => {
         // Data
         cvFile,
         dealBreakers,
+        bioKeywords, // Export this so the UI can use it
 
         // Status Flags (Easy for UI to read)
         inputError,

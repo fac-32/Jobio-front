@@ -15,6 +15,7 @@ export default function BioPage() {
         inputError, // <--- Error message from validation or backend
         isUploading, // <--- Loading state
         isSuccess, // <--- Success state
+        bioKeywords, // <--- Extracted keywords from CV
     } = useBioInputHandler();
 
     return (
@@ -47,6 +48,25 @@ export default function BioPage() {
                         />
                     </svg>
                     <span className="block sm:inline">{inputError}</span>
+                </div>
+            )}
+
+            {/* Bio Keywords Display Section */}
+            {isSuccess && bioKeywords.length > 0 && (
+                <div className="w-full max-w-md bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 text-left">
+                    <h3 className="text-sm font-bold text-blue-800 uppercase tracking-wide mb-3">
+                        AI Extracted Keywords
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                        {bioKeywords.map((keyword, index) => (
+                            <span
+                                key={index}
+                                className="bg-white text-blue-600 border border-blue-200 px-3 py-1 rounded-full text-sm font-medium shadow-sm"
+                            >
+                                {keyword}
+                            </span>
+                        ))}
+                    </div>
                 </div>
             )}
 
