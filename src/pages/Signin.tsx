@@ -85,7 +85,7 @@ export default function SignIn() {
 
                 <button
                     onClick={() => setNewUser(!newUser)}
-                    className="w-full text-indigo-600 hover:underline text-sm mt-2"
+                    className="w-full text-indigo-600 hover:underline cursor-pointer text-sm mt-2"
                 >
                     {newUser
                         ? 'Have an account? Sign In'
