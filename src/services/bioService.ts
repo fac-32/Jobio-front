@@ -7,23 +7,41 @@ const API_URL = 'http://localhost:3000';
 
 export const bioService = {
     uploadBio: async (payload: BioPayload) => {
+        // Get the token (Adjust 'token' to whatever key you use in localStorage)
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+            throw new Error('You must be logged in to upload a bio.'); // Ensure authentication
+        }
+        // Prepare form data
         const formData = new FormData();
-
-        // FIX IS HERE: Use 'payload.cv', NOT 'payload.file'
         formData.append('cv', payload.cv);
-
-        // Append dealbreakers
         formData.append('dealbreakers', JSON.stringify(payload.dealBreakers));
 
         try {
             const response = await fetch(`${API_URL}/upload-cv`, {
                 method: 'POST',
+                headers: {
+                    // Attach the authorisation token here
+                    Authorization: `Bearer ${token}`,
+                    // Note: do NOT set 'Content-Type' for FormData; fetch handles it.
+                },
                 body: formData,
             });
 
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Upload failed');
+                if (response.status === 401) {
+                    throw new Error('Session expired. Please login again.');
+                }
+                const text = await response.text();
+                try {
+                    const json = JSON.parse(text);
+                    throw new Error(json.error || 'Upload failed');
+                } catch {
+                    throw new Error(
+                        `Server error: ${response.status} ${response.statusText}`,
+                    );
+                }
             }
 
             return await response.json();

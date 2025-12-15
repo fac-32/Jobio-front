@@ -1,8 +1,9 @@
 // functions to handle CV file and dealbreaker text input with validation
 // Manages state, validation, and error messages
 // Used by BioPage.tsx
-import { useState, type ChangeEvent } from 'react';
+import { useState, useEffect, type ChangeEvent } from 'react';
 import { bioService } from '../../services/bioService'; // Ensure this path matches where you put bioService.ts
+import { useNavigate } from 'react-router-dom'; // Import router to redirect if user not signed-in
 
 // --- Constants ---
 const MAX_FILE_SIZE_MB = 5;
@@ -14,6 +15,19 @@ const ALLOWED_TYPES = [
 ];
 
 export const useBioInputHandler = () => {
+    const navigate = useNavigate(); // Initialize navigation
+
+    // --- The Auth Guard ---
+    // This runs once when the component loads.
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            // User isn't logged in? Send them to Sign In immediately.
+            // 'replace: true' prevents them from clicking "Back" to return here.
+            navigate('/sign-in', { replace: true });
+        }
+    }, [navigate]);
+
     // --- Local Data State ---
     const [cvFile, setCvFile] = useState<File | null>(null);
     const [dealBreakers, setDealBreakers] = useState<string[]>(
