@@ -11,6 +11,21 @@ export default function SignIn() {
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [emailError, setEmailError] = useState(false);
+    const [signupSuccess, setSignupSuccess] = useState(false);
+
+    if (signupSuccess) {
+        return (
+            <div className="flex flex-col items-center justify-center mt-20 px-4">
+                <h1 className="text-2xl font-bold text-indigo-600 mb-4">
+                    Check your email 📬
+                </h1>
+                <p className="text-slate-600 text-center max-w-sm">
+                    We’ve sent you a confirmation link. Please check your inbox
+                    to verify your account before signing in.
+                </p>
+            </div>
+        );
+    }
 
     return (
         <div className="flex flex-col items-center justify-center mt-10 px-4">
@@ -91,13 +106,15 @@ export default function SignIn() {
                             return;
                         }
 
-                        if (
-                            password.length < 6 ||
-                            password !== repeatPassword
-                        ) {
+                        if (password.length < 6) {
                             setError(
-                                'Passwords do not match or are too short.',
+                                'Password must be at least 6 characters long.',
                             );
+                            return;
+                        }
+
+                        if (password !== repeatPassword) {
+                            setError('Passwords do not match.');
                             return;
                         }
 
@@ -108,6 +125,8 @@ export default function SignIn() {
                             setError,
                             setLoading,
                             setEmailError,
+                            setSignupSuccess,
+                            setNewUser,
                         );
                     }}
                     className={`w-full py-2 rounded-lg font-medium transition
@@ -197,6 +216,8 @@ async function handleSignUp(
     setError: (msg: string) => void,
     setLoading: (v: boolean) => void,
     setEmailError: (v: boolean) => void,
+    setSignupSuccess: (v: boolean) => void,
+    setNewUser: (v: boolean) => void,
 ) {
     try {
         setLoading(true);
@@ -206,7 +227,8 @@ async function handleSignUp(
             method: 'POST',
             body: JSON.stringify({ name, email, password }),
         });
-
+        setSignupSuccess(true);
+        setNewUser(false);
         console.log('Sign up successful');
     } catch (err: any) {
         if (err.status === 409) {
