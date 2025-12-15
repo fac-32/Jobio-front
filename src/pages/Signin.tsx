@@ -14,6 +14,13 @@ export default function SignIn() {
     const [emailError, setEmailError] = useState(false);
     const [signupSuccess, setSignupSuccess] = useState(false);
 
+    const isFormValid = newUser
+        ? validateEmail(email) &&
+          name.trim().length >= 2 &&
+          password.length > 0 &&
+          repeatPassword.length > 0
+        : validateEmail(email) && password.length > 0;
+
     if (signupSuccess) {
         return (
             <div className="flex flex-col items-center justify-center mt-20 px-4">
@@ -81,29 +88,12 @@ export default function SignIn() {
                 )}
 
                 <button
-                    disabled={loading}
+                    disabled={loading || !isFormValid}
                     onClick={() => {
-                        if (loading) return;
-
-                        if (!validateEmail(email)) {
-                            setError('Please enter a valid email address.');
-                            setEmailError(true);
-                            return;
-                        } else {
-                            setEmailError(false);
-                        }
+                        if (loading || !isFormValid) return;
 
                         if (!newUser) {
-                            if (password.length < 1) {
-                                setError('Please enter your password.');
-                                return;
-                            }
                             handleSignin(email, password);
-                            return;
-                        }
-
-                        if (name.trim().length < 2) {
-                            setError('Name is too short.');
                             return;
                         }
 
@@ -130,11 +120,11 @@ export default function SignIn() {
                             setNewUser,
                         );
                     }}
-                    className={`w-full py-2 rounded-lg font-medium transition
+                    className={`w-full py-2 rounded-lg font-medium transition text-white
         ${
-            loading
+            loading || !isFormValid
                 ? 'bg-slate-400 cursor-not-allowed'
-                : 'bg-indigo-600 hover:bg-indigo-700'
+                : 'bg-indigo-600 hover:bg-indigo-700 cursor-pointer'
         }
     `}
                 >
