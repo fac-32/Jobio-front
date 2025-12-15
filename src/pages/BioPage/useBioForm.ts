@@ -14,7 +14,7 @@ const ALLOWED_TYPES = [
     'text/plain',
 ];
 
-export const useBioInputHandler = () => {
+export const useBioForm = () => {
     const navigate = useNavigate(); // Initialize navigation
 
     // --- The Auth Guard ---
@@ -45,6 +45,7 @@ export const useBioInputHandler = () => {
     >('idle');
     const [inputError, setInputError] = useState<string | null>(null);
 
+    // --- 4. Handlers ---
     // 1. Handle File Selection (Immediate Validation)
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
         setInputError(null);
@@ -52,14 +53,14 @@ export const useBioInputHandler = () => {
 
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
-
+            // Validate Type
             if (!ALLOWED_TYPES.includes(file.type)) {
                 setInputError(
                     'Invalid file type. Please upload a PDF or Word Document.',
                 );
                 return;
             }
-
+            // Validate Size
             if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
                 setInputError(
                     `File is too large. Max size is ${MAX_FILE_SIZE_MB}MB.`,
@@ -80,7 +81,7 @@ export const useBioInputHandler = () => {
         setDealBreakers(updatedList);
     };
 
-    // 3. The Master Submit Function
+    // --- The Master Submit Function ---
     // It validates AND sends the data - UI just calls this
     const submitBio = async () => {
         setInputError(null);
@@ -101,7 +102,7 @@ export const useBioInputHandler = () => {
             return;
         }
 
-        // Prepare clean data
+        // Prepare clean dealbreakers (trimmed, non-empty)
         const cleanedDealBreakers = dealBreakers
             .map((d) => d.trim())
             .filter((d) => d !== '');
@@ -111,22 +112,25 @@ export const useBioInputHandler = () => {
         setBioKeywords([]); // Clear previous results
 
         try {
+            // Step 1: Upload CV
             // Call the service (which handles the FormData conversion internally)
-            const result = await bioService.uploadBio({
-                cv: cvFile,
-                dealBreakers: cleanedDealBreakers,
-            });
+            const cvResponse = await bioService.uploadCV(cvFile);
 
             // Capture the keywords from the backend response
             // The key 'generated_tags' matches the backend response
-            if (result.generated_tags) {
-                setBioKeywords(result.generated_tags);
+            if (cvResponse.generated_tags) {
+                setBioKeywords(cvResponse.generated_tags);
+            }
+
+            // Step 2: Upload Dealbreakers (only if CV upload worked)
+            if (cleanedDealBreakers.length > 0) {
+                await bioService.uploadDealbreakers(cleanedDealBreakers);
             }
 
             setStatus('success');
-            console.log('AI Output:', result.generated_tags); // Check console too!
+            console.log('AI Output:', cvResponse.generated_tags); // Check console too!
         } catch (error) {
-            console.error(error);
+            console.error('Bio submission failed:', error);
             setStatus('error');
             // Check if the error object has a message we can show
             const msg =

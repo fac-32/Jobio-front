@@ -1,57 +1,36 @@
-import { type BioPayload } from '../types';
 import { api } from '../../lib/api';
 
 // Service to handle Bio uploads to the backend
 
 export const bioService = {
-    uploadBio: async (payload: BioPayload) => {
+    // 1. Upload CV
+    uploadCV: async (file: File) => {
         // Get the token from localStorage
         const token = localStorage.getItem('token');
-
-        if (!token) {
-            throw new Error('You must be logged in to upload a bio.'); // Ensure authentication
-        }
+        if (!token) throw new Error('You must be logged in to upload a CV.'); // Ensure authentication
         // Prepare form data
         const formData = new FormData();
-        formData.append('cv', payload.cv);
-        // // Backend requires 'user_id' as well, but we assume it's extracted from the token server-side
-        // formData.append('dealbreakers', JSON.stringify(payload.dealBreakers));
+        formData.append('cv', file);
 
-        try {
-            // Points to the router mounted at /users_cvs
-            const response = await api(`/users_cvs`, {
-                method: 'POST',
-                headers: {
-                    // Attach the authorisation token here
-                    Authorization: `Bearer ${token}`,
-                    // Note: do NOT set 'Content-Type' for FormData; fetch handles it.
-                },
-                body: formData,
-            });
+        // We just return the promise. If it fails, api() throws and error,
+        // and the component calling this function will catch it.
+        return api('/users_cvs', {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${token}` }, // Attach the authorisation token here
+            body: formData,
+        });
+    },
 
-            // SUCCESS: No need to check response.ok here.
-            // If we reached this line, the upload worked.
-            return response;
+    // 2. Upload Dealbreakers
+    uploadDealbreakers: async (dealBreakers: string[]) => {
+        const token = localStorage.getItem('token');
+        if (!token)
+            throw new Error('You must be logged in to save dealbreakers.');
 
-            // if (!response.ok) {
-            //     if (response.status === 401) {
-            //         throw new Error('Session expired. Please login again.');
-            //     }
-            //     const text = await response.text();
-            //     try {
-            //         const json = JSON.parse(text);
-            //         throw new Error(json.error || 'Upload failed');
-            //     } catch {
-            //         throw new Error(
-            //             `Server error: ${response.status} ${response.statusText}`,
-            //         );
-            //     }
-            // }
-
-            return await response.json();
-        } catch (error) {
-            console.error('Bio upload error:', error);
-            throw error;
-        }
+        return api('/users_dealbreakers', {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ dealbreakers: dealBreakers }),
+        });
     },
 };
