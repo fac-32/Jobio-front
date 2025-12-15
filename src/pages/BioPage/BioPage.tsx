@@ -1,62 +1,22 @@
 import { Button } from '../../components/ui/Button';
 import { useBioInputHandler } from './CvProcessor';
-import { api } from '../../lib/api';
+
+// Keep this for the character counter display
 const MAX_TEXT_LENGTH = 50;
 
-// BioPage: allows user to upload their bio, including a CV file and
-// some text as their dealbreakers
 export default function BioPage() {
-    // Initialize the hook at the top level of the component
-    // This creates the state variables (cvFile, dealBreakers) in memory.
+    // We now get everything we need directly from the hook.
+    // The hook handles the heavy lifting (validation, API calls, error states).
     const {
-        handleFileChange,
-        handleDealbreakerChange,
-        verifyAndStageInputs,
-        dealBreakers, // We need this to control the textarea value
-        inputError,
+        handleFileChange, // <--- The function to call on cvfile input change
+        handleDealbreakerChange, // <--- The function to call on dealbreaker input change
+        submitBio, // <--- The function to call on submit
+        dealBreakers, // <--- Current dealbreakers state
+        inputError, // <--- Error message from validation or backend
+        isUploading, // <--- Loading state
+        isSuccess, // <--- Success state
     } = useBioInputHandler();
 
-    // Define handleUpload INSIDE the component so it can access 'verifyAndStageInputs'
-    const handleUpload = async () => {
-        // This calls the verification logic from your hook
-        // Note: No arguments are needed. It checks the hook's internal state.
-        const validData = verifyAndStageInputs();
-
-        if (validData) {
-            // SUCCESS: 'validData' now contains { file: File, text: string }
-            console.log('Validation passed!');
-            console.log('File:', validData.file.name);
-            console.log('Dealbreakers:', validData.dealBreakers);
-
-            // TODO: Call your backend service here
-            // await uploadService.send(validData);
-            const form = new FormData();
-            form.append('cv', validData.file, validData.file.name);
-            api('/upload-cv', {
-                headers: {
-                    /* This is set up to override the default "Content-Type" in lib/api.ts */
-                },
-                method: 'POST',
-                body: form,
-            });
-            api('/users_dealbreakers', {
-                method: 'POST',
-                headers: {
-                    Authorization: 'Bearer AUTH-TOKEN-HERE', // Replace with actual token to test
-                    'Content-Type': 'application/json',
-                },
-
-                body: JSON.stringify({
-                    user_id: 9 /* hard coded placeholder */,
-                    dealbreakers: validData.dealBreakers,
-                }),
-            });
-        } else {
-            console.log('Validation failed');
-        }
-    };
-
-    // Set up UI for bio upload
     return (
         <div className="flex flex-col items-center text-center mt-16 px-4">
             <h1 className="text-4xl font-bold text-slate-600 mb-4">
@@ -68,14 +28,12 @@ export default function BioPage() {
                 job matching.
             </p>
 
-            {/* --- ERROR BANNER START --- */}
-            {/* We only render this block if inputError is not null */}
+            {/* --- ERROR BANNER --- */}
             {inputError && (
                 <div
                     role="alert"
                     className="mb-6 px-4 py-3 rounded relative bg-red-100 border border-red-400 text-red-700 max-w-md w-full text-left flex items-center gap-2"
                 >
-                    {/* Optional: Add a small warning icon */}
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         className="h-5 w-5"
@@ -88,39 +46,41 @@ export default function BioPage() {
                             clipRule="evenodd"
                         />
                     </svg>
-
-                    {/* The Message from the Hook */}
                     <span className="block sm:inline">{inputError}</span>
                 </div>
             )}
-            {/* --- ERROR BANNER END --- */}
+
+            {/* --- SUCCESS BANNER --- */}
+            {isSuccess && (
+                <div
+                    role="alert"
+                    className="mb-6 px-4 py-3 rounded relative bg-green-100 border border-green-400 text-green-700 max-w-md w-full text-left"
+                >
+                    <span className="font-bold">Success!</span> Your bio has
+                    been uploaded.
+                </div>
+            )}
 
             <div className="space-y-4">
-                {/* File input for CV upload - only accept PDF or Word documents */}
+                {/* File input */}
                 <input
                     type="file"
                     accept=".pdf,.docx,.txt"
-                    // className="border p-2 w-full max-w-md"
-                    // Connects the UI to your Hook logic
                     onChange={handleFileChange}
+                    disabled={isUploading}
                     className={`border p-2 w-full max-w-md rounded 
-                        ${inputError ? 'border-red-500 focus:ring-red-500' : 'border-gray-300'}`}
+                        ${inputError ? 'border-red-500 focus:ring-red-500' : 'border-gray-300'}
+                        disabled:opacity-50 disabled:cursor-not-allowed`}
                 />
-                {/* <textarea
-                    placeholder="Enter your dealbreakers here..."
-                    className="border p-2 w-full max-w-md h-32"
-                    // Connects the UI to your Hook logic
-                    onChange={handleDealbreakerChange}
-                    // Ensures the box shows exactly what is in your state
-                    value={dealBreakers}
-                ></textarea> */}
+
+                {/* Dealbreakers Input List */}
                 <div className="space-y-4">
                     {dealBreakers.map((text, index) => (
                         <div key={index} className="w-full">
                             <input
                                 type="text"
                                 placeholder={`Dealbreaker #${index + 1}`}
-                                className="border p-3 w-full rounded focus:ring-2 focus:ring-blue-500 outline-none"
+                                className="border p-3 w-full rounded focus:ring-2 focus:ring-blue-500 outline-none disabled:bg-gray-100"
                                 value={text}
                                 onChange={(e) =>
                                     handleDealbreakerChange(
@@ -128,6 +88,7 @@ export default function BioPage() {
                                         e.target.value,
                                     )
                                 }
+                                disabled={isUploading}
                             />
 
                             {/* Character Counter */}
@@ -143,12 +104,15 @@ export default function BioPage() {
                         </div>
                     ))}
                 </div>
+
+                {/* Submit Button */}
                 <Button
                     variant="primary"
-                    onClick={handleUpload}
-                    className="px-6 py-3 text-lg"
+                    onClick={submitBio} // Directly calling the hook function
+                    disabled={isUploading}
+                    className="px-6 py-3 text-lg disabled:opacity-70 disabled:cursor-not-allowed"
                 >
-                    Upload Bio
+                    {isUploading ? 'Uploading...' : 'Upload Bio'}
                 </Button>
             </div>
         </div>
