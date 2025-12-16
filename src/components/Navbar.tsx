@@ -1,7 +1,7 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { Button } from './ui/Button';
 import logo from '../assets/logo.png';
-import { UserDropdown } from './ui/UserDropDown';
+import { UserDropdown } from './ui/UserDropdown';
 import { useState } from 'react';
 
 export default function Navbar() {
