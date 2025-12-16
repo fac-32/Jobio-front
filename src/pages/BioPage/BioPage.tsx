@@ -20,12 +20,23 @@ export default function BioPage() {
         isUploading, // <--- Loading state
         isSuccess, // <--- Success state
         bioKeywords, // <--- Extracted keywords from CV
+        isLoadingData, // <--- Get the loading state
     } = useBioForm();
+
+    // --- LOADING STATE ---
+    if (isLoadingData) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[50vh]">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                <p className="mt-4 text-slate-500">Checking profile...</p>
+            </div>
+        );
+    }
 
     return (
         <div className="flex flex-col items-center text-center mt-16 px-4">
             <h1 className="text-4xl font-bold text-slate-600 mb-4">
-                {isSuccess ? 'Profile Created!' : 'Upload Your Bio'}
+                {isSuccess ? 'Your Profile' : 'Upload Your Bio'}
             </h1>
             <p className="text-lg text-slate-600 max-w-xl mb-10">
                 {isSuccess
@@ -53,12 +64,15 @@ export default function BioPage() {
                     <span className="block sm:inline">{inputError}</span>
                 </div>
             )}
-            {/* --- SUCCESS STATE (View Mode) --- */}
+            {/* --- VIEW MODE (Success or Existing Data) --- */}
             {isSuccess ? (
                 <div className="w-full max-w-md space-y-6 animate-fade-in">
+                    {/* Only show "Success!" banner if this was a fresh upload (optional refinement)
+                        For now, we can just hide it or change text contextually. 
+                    */}
                     <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded text-left mb-6">
-                        <span className="font-bold">Success!</span> Your profile
-                        has been updated.
+                        <span className="font-bold">Ready for matching!</span>{' '}
+                        Your profile.
                     </div>
 
                     {/* 1. AI Keywords Display */}

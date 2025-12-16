@@ -35,6 +35,9 @@ export const useBioForm = () => {
     );
     const [bioKeywords, setBioKeywords] = useState<string[]>([]); // store the keywords extracted from the CV
 
+    // Loading state for initial fetch
+    const [isLoadingData, setIsLoadingData] = useState(true);
+
     // --- UI Status State (New) ---
     // 'idle' = nothing happening
     // 'uploading' = sending data
@@ -45,7 +48,7 @@ export const useBioForm = () => {
     >('idle');
     const [inputError, setInputError] = useState<string | null>(null);
 
-    // --- 4. Handlers ---
+    // ---  Handlers ---
     // 1. Handle File Selection (Immediate Validation)
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
         setInputError(null);
@@ -80,6 +83,66 @@ export const useBioForm = () => {
         updatedList[index] = value;
         setDealBreakers(updatedList);
     };
+
+    // --- Fetch Data on Mount ---
+    useEffect(() => {
+        const checkExistingProfile = async () => {
+            try {
+                // Fetch both in parallel
+                const [cvData, dbData] = await Promise.all([
+                    bioService.getCVKeywords(),
+                    bioService.getDealbreakers(),
+                ]);
+
+                let hasData = false;
+
+                // 1. Handle CV Data
+                // Assuming backend returns array: [{ id: 1, cv_keywords: "React, Node" }]
+                if (cvData && cvData.length > 0) {
+                    const keywordsString = cvData[0].cv_keywords || '';
+                    // Split string "React, Node" back into array ["React", "Node"]
+                    // If your backend returns an array already, remove the split.
+                    const keywordsArray = keywordsString
+                        .split(',')
+                        .map((s: string) => s.trim());
+
+                    setBioKeywords(keywordsArray);
+                    hasData = true;
+                }
+
+                // 2. Handle Dealbreakers Data
+                // Assuming backend returns array: [{ id: 1, dealbreaker_text: "No remote" }, ...]
+                // OR [{ dealbreakers: ["No remote", "Low pay"] }] depending on your DB structure
+                if (dbData && dbData.length > 0) {
+                    // Adjust this mapping based on your exact DB column names
+                    const loadedDealbreakers = dbData.map(
+                        (item: any) => item.dealbreaker_text || item.text,
+                    );
+
+                    // Pad array to 5 items so the inputs still work if they want to edit later
+                    const paddedList = [
+                        ...loadedDealbreakers,
+                        ...Array(5).fill(''),
+                    ].slice(0, 5);
+
+                    setDealBreakers(paddedList);
+                    hasData = true;
+                }
+
+                // If we found data, show the Success/View screen immediately
+                if (hasData) {
+                    setStatus('success');
+                }
+            } catch (error) {
+                console.error('Error fetching profile:', error);
+                // We don't block the user; if fetch fails, just let them fill the form
+            } finally {
+                setIsLoadingData(false);
+            }
+        };
+
+        checkExistingProfile();
+    }, []);
 
     // --- The Master Submit Function ---
     // It validates AND sends the data - UI just calls this
@@ -151,7 +214,7 @@ export const useBioForm = () => {
         inputError,
         isUploading: status === 'uploading',
         isSuccess: status === 'success',
-
+        isLoadingData,
         // Actions
         handleFileChange,
         handleDealbreakerChange,

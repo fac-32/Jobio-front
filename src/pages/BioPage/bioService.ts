@@ -40,4 +40,40 @@ export const bioService = {
             }),
         });
     },
+
+    // --- GET METHODS ---
+
+    // 3. Get Keywords
+    getCVKeywords: async () => {
+        const token = localStorage.getItem('token');
+        const userId = localStorage.getItem('user_id');
+        // Return empty array if no user/token, rather than null/error
+        if (!token || !userId) return [];
+
+        // A. Get the raw list from backend
+        const data = await api(`/users_cvs?user_id=${userId}`, {
+            method: 'GET',
+            headers: { Authorization: `Bearer ${token}` },
+        });
+
+        // B. Check if we actually found a record
+        // The backend returns an array, so we check if it has at least one item
+        if (Array.isArray(data) && data.length > 0) {
+            const record = data[0]; // Take the first record
+
+            // C. Extract the string (e.g., "React, Node, CSS")
+            const keywordsString = record.cv_keywords;
+
+            // D. Convert String -> Array
+            if (typeof keywordsString === 'string') {
+                return keywordsString
+                    .split(',') // Split by comma
+                    .map((k: string) => k.trim()) // Remove extra spaces
+                    .filter((k: string) => k.length > 0); // Remove empty strings
+            }
+        }
+
+        // Default: Return empty array if no record or no keywords found
+        return [];
+    },
 };
