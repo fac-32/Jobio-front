@@ -26,7 +26,7 @@ export default function Navbar() {
     }
 
     return (
-        <div className="sticky bg-white top-0 z-50">
+        <div className="sticky bg-gray-50 top-0">
             <header
                 className="
                     bg-white shadow-md rounded-4xl top-bar mt-4 mx-6
