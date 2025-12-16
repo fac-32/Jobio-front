@@ -3,6 +3,7 @@ import { Button } from './ui/Button';
 import logo from '../assets/logo.png';
 import { UserDropdown } from './ui/UserDropdown';
 import { useState } from 'react';
+import { BASE_URL } from '../lib/api';
 
 export default function Navbar() {
     const navigate = useNavigate();
@@ -61,7 +62,7 @@ export default function Navbar() {
                         </NavLink>
 
                         <NavLink
-                            to="http://localhost:3000/api-docs"
+                            to={BASE_URL + '/api-docs'}
                             className={({ isActive }) =>
                                 isActive
                                     ? 'text-indigo-600 font-medium'
