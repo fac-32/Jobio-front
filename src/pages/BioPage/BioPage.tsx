@@ -14,12 +14,14 @@ export default function BioPage() {
         handleFileChange, // <--- The function to call on cvfile input change
         handleDealbreakerChange, // <--- The function to call on dealbreaker input change
         submitBio, // <--- The function to call on submit
-        cvFile,
+        cvFile, // <--- Current CV file state
+        hasExistingCv, // <--- Does the user already have a CV uploaded?
         dealBreakers, // <--- Current dealbreakers state
         inputError, // <--- Error message from validation or backend
         isUploading, // <--- Loading state
         isSuccess, // <--- Success state
         bioKeywords, // <--- Extracted keywords from CV
+        enableEditing, // <--- Function to re-enable editing
         isLoadingData, // <--- Get the loading state
     } = useBioForm();
 
@@ -34,15 +36,15 @@ export default function BioPage() {
     }
 
     return (
-        <div className="flex flex-col items-center text-center mt-16 px-4">
+        <div className="flex flex-col items-center text-center mt-16 px-4 pb-24">
             <h1 className="text-4xl font-bold text-slate-600 mb-4">
-                {isSuccess ? 'Your Profile' : 'Upload Your Bio'}
-            </h1>
-            <p className="text-lg text-slate-600 max-w-xl mb-10">
                 {isSuccess
-                    ? 'Your CV and dealbreakers have been saved successfully.'
-                    : 'Please upload your CV and provide any dealbreakers you have for job matching.'}
-            </p>
+                    ? 'Your Profile'
+                    : hasExistingCv
+                      ? 'Update Profile'
+                      : 'Create Profile'}
+            </h1>
+
             {/* --- ERROR BANNER --- */}
             {inputError && (
                 <div
@@ -64,12 +66,11 @@ export default function BioPage() {
                     <span className="block sm:inline">{inputError}</span>
                 </div>
             )}
+
             {/* --- VIEW MODE (Success or Existing Data) --- */}
             {isSuccess ? (
-                <div className="w-full max-w-md space-y-6 animate-fade-in">
-                    {/* Only show "Success!" banner if this was a fresh upload (optional refinement)
-                        For now, we can just hide it or change text contextually. 
-                    */}
+                // --- UPDATE #1: WIDER CONTAINER FOR VIEW MODE ---
+                <div className="w-full md:w-2/3 lg:w-1/2 max-w-4xl space-y-6 animate-fade-in transition-all duration-300">
                     <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded text-left mb-6">
                         <span className="font-bold">Ready for matching!</span>{' '}
                         Your profile.
@@ -141,25 +142,41 @@ export default function BioPage() {
                         </div>
                     )}
 
-                    {/* Navigation Button */}
-                    <Button
-                        variant="primary"
-                        onClick={() => navigate('/match')}
-                        className="w-full py-3 text-lg mt-4"
-                    >
-                        Continue to Find My Matches
-                    </Button>
+                    <div className="flex flex-col gap-3 mt-6">
+                        <Button
+                            variant="primary"
+                            onClick={() => navigate('/match')}
+                            className="w-full py-3 text-lg"
+                        >
+                            Find Matches
+                        </Button>
+
+                        <button
+                            onClick={enableEditing}
+                            className="text-slate-500 hover:text-blue-600 text-sm font-semibold underline decoration-dotted underline-offset-4"
+                        >
+                            Edit Keywords or Dealbreakers
+                        </button>
+                    </div>
                 </div>
             ) : (
-                /* --- FORM STATE (Edit Mode) --- */
-                <div className="space-y-6 w-full max-w-md">
+                /* --- FORM MODE (Edit / Create) --- */
+                <div className="w-full md:w-2/3 lg:w-1/2 max-w-4xl space-y-6 transition-all duration-300">
                     {/* File Input */}
                     <div className="text-left">
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Upload CV (PDF or Word)
+                            {hasExistingCv
+                                ? 'Update CV (Optional)'
+                                : 'Upload CV'}{' '}
                         </label>
+
+                        {hasExistingCv && !cvFile && (
+                            <div className="text-xs text-green-600 mb-2 font-medium bg-green-50 p-2 rounded border border-green-200">
+                                ✓ Current CV active. Upload new file only to
+                                replace it.
+                            </div>
+                        )}
                         <input
-                            // Key helps reset the input if needed
                             key={cvFile ? 'has-file' : 'no-file'}
                             type="file"
                             accept=".pdf,.docx,.txt"
@@ -182,32 +199,35 @@ export default function BioPage() {
                         <label className="block text-sm font-medium text-gray-700 text-left">
                             Top 5 Dealbreakers
                         </label>
-                        {dealBreakers.map((text, index) => (
-                            <div key={index} className="relative">
-                                <input
-                                    type="text"
-                                    placeholder={`Dealbreaker #${index + 1}`}
-                                    className="border p-3 w-full rounded focus:ring-2 focus:ring-blue-500 outline-none disabled:bg-gray-100"
-                                    value={text}
-                                    onChange={(e) =>
-                                        handleDealbreakerChange(
-                                            index,
-                                            e.target.value,
-                                        )
-                                    }
-                                    disabled={isUploading}
-                                />
-                                <div
-                                    className={`absolute right-3 top-3 text-xs ${
-                                        text.length === MAX_TEXT_LENGTH
-                                            ? 'text-red-500 font-bold'
-                                            : 'text-gray-400'
-                                    }`}
-                                >
-                                    {text.length}/{MAX_TEXT_LENGTH}
+                        {dealBreakers.map((text, index) => {
+                            // Determine the default display text
+                            const defaultPlaceholder = `Dealbreaker #${index + 1}`;
+                            return (
+                                <div key={index} className="relative">
+                                    <input
+                                        type="text"
+                                        placeholder={defaultPlaceholder} // <-- ONLY use placeholder for hint
+                                        value={text} // <-- ALWAYS use the actual state value
+                                        className="border p-3 w-full rounded focus:ring-2 focus:ring-blue-500 outline-none disabled:bg-gray-100"
+                                        onChange={(e) =>
+                                            // Update state with whatever the user types
+                                            handleDealbreakerChange(
+                                                index,
+                                                e.target.value,
+                                            )
+                                        }
+                                        disabled={isUploading}
+                                    />
+
+                                    {/* The rest of your code for character count remains the same */}
+                                    <div
+                                        className={`absolute right-3 top-3 text-xs ${text.length === MAX_TEXT_LENGTH ? 'text-red-500 font-bold' : 'text-gray-400'}`}
+                                    >
+                                        {text.length}/{MAX_TEXT_LENGTH}
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
 
                     {/* Submit Button */}
@@ -217,34 +237,22 @@ export default function BioPage() {
                         disabled={isUploading}
                         className="w-full py-3 text-lg shadow-lg disabled:opacity-70"
                     >
-                        {isUploading ? (
-                            <span className="flex items-center justify-center gap-2">
-                                <svg
-                                    className="animate-spin h-5 w-5 text-white"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <circle
-                                        className="opacity-25"
-                                        cx="12"
-                                        cy="12"
-                                        r="10"
-                                        stroke="currentColor"
-                                        strokeWidth="4"
-                                    ></circle>
-                                    <path
-                                        className="opacity-75"
-                                        fill="currentColor"
-                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                    ></path>
-                                </svg>
-                                Uploading...
-                            </span>
-                        ) : (
-                            'Upload Bio'
-                        )}
+                        {isUploading
+                            ? 'Saving...'
+                            : hasExistingCv
+                              ? 'Save Changes'
+                              : 'Upload Bio'}
                     </Button>
+
+                    {/* Cancel Edit Button */}
+                    {hasExistingCv && (
+                        <button
+                            onClick={() => window.location.reload()}
+                            className="text-slate-400 text-sm hover:text-slate-600 block mx-auto mt-2"
+                        >
+                            Cancel
+                        </button>
+                    )}
                 </div>
             )}
         </div>

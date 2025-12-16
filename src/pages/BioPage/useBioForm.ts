@@ -31,12 +31,11 @@ export const useBioForm = () => {
     // --- Local Data State ---
     const [cvFile, setCvFile] = useState<File | null>(null);
     const [dealBreakers, setDealBreakers] = useState<string[]>(
-        Array(5).fill(''),
+        Array.from({ length: 5 }, (_, i) => `Dealbreaker #${i + 1}`),
     );
     const [bioKeywords, setBioKeywords] = useState<string[]>([]); // store the keywords extracted from the CV
-
-    // Loading state for initial fetch
-    const [isLoadingData, setIsLoadingData] = useState(true);
+    const [isLoadingData, setIsLoadingData] = useState(true); // Loading state for initial fetch
+    const [hasExistingCv, setHasExistingCv] = useState(false); //Track if backend already has a CV
 
     // --- UI Status State (New) ---
     // 'idle' = nothing happening
@@ -49,6 +48,15 @@ export const useBioForm = () => {
     const [inputError, setInputError] = useState<string | null>(null);
 
     // ---  Handlers ---
+
+    // 1. Enable Editing
+    // Simply resets status to 'idle' so the form renders again.
+    // We keep the data in state so the inputs are pre-filled.
+    const enableEditing = () => {
+        setStatus('idle');
+        setInputError(null);
+    };
+
     // 1. Handle File Selection (Immediate Validation)
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
         setInputError(null);
@@ -94,27 +102,31 @@ export const useBioForm = () => {
                     bioService.getDealbreakers(),
                 ]);
 
+                console.log('Fetched dealbreakers:', dbList);
+
                 let hasData = false;
 
                 // 1. Handle keywords
-                // 1. Handle Keywords (Simple check now!)
                 if (keywords.length > 0) {
                     setBioKeywords(keywords);
                     hasData = true;
+                    setHasExistingCv(true); // Mark that we have a CV
                 }
 
                 // 2. Handle Dealbreakers
                 if (dbList.length > 0) {
                     // We need 5 inputs in the UI, so we add empty strings if we have fewer than 5
-                    // e.g. ["No Remote", "Low Pay"] -> ["No Remote", "Low Pay", "", "", ""]
                     const paddedList = [...dbList, ...Array(5).fill('')].slice(
                         0,
                         5,
                     );
 
-                    setDealBreakers(paddedList);
+                    // Filter out any default placeholder strings that might still be in the initial state
+                    // before we set the new data.
+                    setDealBreakers(paddedList); // <--- This is correct as it overwrites the initial state
                     hasData = true;
                 }
+                // If dbList is empty, the state remains initialized to the "Dealbreaker #X" strings.
 
                 // If we found data, show the Success/View screen immediately
                 if (hasData) {
@@ -131,17 +143,19 @@ export const useBioForm = () => {
         checkExistingProfile();
     }, []);
 
-    // --- The Master Submit Function ---
+    // --- Submit Function ---
     // It validates AND sends the data - UI just calls this
     const submitBio = async () => {
         setInputError(null);
 
         // --- A. Validation Phase ---
-        if (!cvFile) {
+        // 1. Check for CV: strictly require a file ONLY if we don't have one on the server yet.
+        if (!cvFile && !hasExistingCv) {
             setInputError('Please select a CV file to upload.');
             return;
         }
 
+        // 2. Check for text length violations
         const hasLengthViolation = dealBreakers.some(
             (text) => text.length > MAX_TEXT_LENGTH,
         );
@@ -154,35 +168,38 @@ export const useBioForm = () => {
 
         // Prepare clean dealbreakers (trimmed, non-empty)
         const cleanedDealBreakers = dealBreakers
-            .map((d) => d.trim())
-            .filter((d) => d !== '');
+            .map((d) => d.trim()) // Trim whitespace
+            .filter((d) => d !== ''); // <-- REMOVES EMPTY STRINGS
 
         // --- B. Submission Phase ---
         setStatus('uploading');
-        setBioKeywords([]); // Clear previous results
+        // REMOVED: setBioKeywords([]) from here.
+        // We only want to clear keywords if we are actually uploading a NEW file.
 
         try {
-            // Step 1: Upload CV
-            // Call the service (which handles the FormData conversion internally)
-            const cvResponse = await bioService.uploadCV(cvFile);
+            // Step 1: Upload CV (Only if user selected a NEW file)
+            if (cvFile) {
+                // Now it is safe to clear old keywords because we are fetching new ones
+                setBioKeywords([]);
 
-            // Capture the keywords from the backend response
-            // The key 'generated_tags' matches the backend response
-            if (cvResponse.generated_tags) {
-                setBioKeywords(cvResponse.generated_tags);
+                const cvResponse = await bioService.uploadCV(cvFile);
+
+                if (cvResponse.generated_tags) {
+                    setBioKeywords(cvResponse.generated_tags);
+                }
+                setHasExistingCv(true); // Mark that we definitely have a CV now
             }
 
-            // Step 2: Upload Dealbreakers (only if CV upload worked)
+            // Step 2: Upload Dealbreakers
+            // We upload if there are any, even if we didn't upload a new CV
             if (cleanedDealBreakers.length > 0) {
                 await bioService.uploadDealbreakers(cleanedDealBreakers);
             }
 
             setStatus('success');
-            console.log('AI Output:', cvResponse.generated_tags); // Check console too!
         } catch (error) {
             console.error('Bio submission failed:', error);
             setStatus('error');
-            // Check if the error object has a message we can show
             const msg =
                 error instanceof Error
                     ? error.message
@@ -202,6 +219,8 @@ export const useBioForm = () => {
         isUploading: status === 'uploading',
         isSuccess: status === 'success',
         isLoadingData,
+        hasExistingCv,
+        enableEditing,
         // Actions
         handleFileChange,
         handleDealbreakerChange,
