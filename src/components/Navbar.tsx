@@ -59,6 +59,17 @@ export default function Navbar() {
                         >
                             Home
                         </NavLink>
+
+                        <NavLink
+                            to="http://localhost:3000/api-docs"
+                            className={({ isActive }) =>
+                                isActive
+                                    ? 'text-indigo-600 font-medium'
+                                    : 'text-gray-600 hover:text-indigo-600'
+                            }
+                        >
+                            API Docs
+                        </NavLink>
                         {isLoggedIn && (
                             <>
                                 <NavLink
