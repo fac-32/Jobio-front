@@ -240,7 +240,6 @@ async function handleSignUp(
         setSignupSuccess(true);
         setNewUser(false);
     } catch (err: any) {
-        
         if (err.status === 409) {
             setError(
                 'This email is already registered. Please sign in instead.',
