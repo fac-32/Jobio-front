@@ -76,4 +76,28 @@ export const bioService = {
         // Default: Return empty array if no record or no keywords found
         return [];
     },
+    // 4. Get Dealbreakers (Cleaned)
+    getDealbreakers: async (): Promise<string[]> => {
+        const token = localStorage.getItem('token');
+        const userId = localStorage.getItem('user_id');
+        if (!token || !userId) return [];
+
+        const data = await api(`/users_dealbreakers?user_id=${userId}`, {
+            method: 'GET',
+            headers: { Authorization: `Bearer ${token}` },
+        });
+
+        // Case A: Backend returns multiple rows (e.g. [{ dealbreaker_text: "A"}, { dealbreaker_text: "B"}])
+        if (Array.isArray(data) && data.length > 0) {
+            // CHECK YOUR DB COLUMN NAME: Is it 'dealbreaker_text', 'text', or 'content'?
+            // Replace 'dealbreaker_text' below with your actual Supabase column name.
+            return data.map(
+                (item: { dealbreaker_text?: string; text?: string }) =>
+                    item.dealbreaker_text || item.text || '',
+            );
+        }
+
+        // Case B: If no data found
+        return [];
+    },
 };
