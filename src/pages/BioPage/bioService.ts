@@ -27,13 +27,17 @@ export const bioService = {
     // 2. Upload Dealbreakers
     uploadDealbreakers: async (dealBreakers: string[]) => {
         const token = localStorage.getItem('token');
+        const userId = localStorage.getItem('user_id');
         if (!token)
             throw new Error('You must be logged in to save dealbreakers.');
 
         return api('/users_dealbreakers', {
             method: 'POST',
             headers: { Authorization: `Bearer ${token}` },
-            body: JSON.stringify({ dealbreakers: dealBreakers }),
+            body: JSON.stringify({
+                dealbreakers: dealBreakers,
+                user_id: userId,
+            }),
         });
     },
 };
