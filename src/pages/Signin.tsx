@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { api } from '../lib/api';
 import { MascotImages } from '../assets/mascotImages';
 import { Eye, EyeOff } from 'lucide-react';
-import { Navigate } from 'react-router-dom';
+// import { replace, useNavigate } from 'react-router';
 
 export default function SignIn() {
     const [name, setName] = useState('');
@@ -16,6 +16,8 @@ export default function SignIn() {
     const [emailError, setEmailError] = useState(false);
     const [signupSuccess, setSignupSuccess] = useState(false);
 
+    // const navigate = useNavigate();
+
     const isFormValid = newUser
         ? validateEmail(email) &&
           name.trim().length >= 2 &&
@@ -23,11 +25,11 @@ export default function SignIn() {
           repeatPassword.length > 0
         : validateEmail(email) && password.length > 0;
 
-    const isLoggedIn = Boolean(localStorage.getItem('token'));
+    // const isLoggedIn = Boolean(localStorage.getItem('token'));
 
-    if (isLoggedIn) {
-        return <Navigate to="/match" replace />;
-    }
+    // if (isLoggedIn) {
+    //     navigate('/bio', { replace: true });
+    // }
 
     if (signupSuccess) {
         return (
@@ -215,7 +217,7 @@ async function handleSignin(email: string, password: string) {
         data.user?.user_metadata?.name ?? email.split('@')[0],
     );
 
-    window.location.href = '/match';
+    window.location.href = '/bio';
 }
 
 async function handleSignUp(
