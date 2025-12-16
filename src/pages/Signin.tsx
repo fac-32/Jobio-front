@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { api } from '../lib/api';
 import { MascotImages } from '../assets/mascotImages';
 import { Eye, EyeOff } from 'lucide-react';
+import { Navigate } from 'react-router-dom';
 
 export default function SignIn() {
     const [name, setName] = useState('');
@@ -21,6 +22,12 @@ export default function SignIn() {
           password.length > 0 &&
           repeatPassword.length > 0
         : validateEmail(email) && password.length > 0;
+
+    const isLoggedIn = Boolean(localStorage.getItem('token'));
+
+    if (isLoggedIn) {
+        return <Navigate to="/match" replace />;
+    }
 
     if (signupSuccess) {
         return (
