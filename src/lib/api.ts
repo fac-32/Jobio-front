@@ -22,18 +22,15 @@ export async function api(path: string, options: RequestInit = {}) {
         headers, // contains auth and correct content-type
     });
 
+    const data = await res.json();
+
     // Handle errors centrally
     if (!res.ok) {
-        // Try to parse error as JSON first, fallback to text
-        const text = await res.text();
-        try {
-            const json = JSON.parse(text);
-            throw new Error(json.error || `Error ${res.status}`);
-        } catch {
-            // If the error body wasn't JSON, throw the raw text
-            throw new Error(text || `HTTP Error ${res.status}`);
-        }
+        const error: any = new Error(data?.error || 'Request failed');
+        error.status = res.status;
+        error.data = data;
+        throw error;
     }
 
-    return res.json();
+    return data;
 }
