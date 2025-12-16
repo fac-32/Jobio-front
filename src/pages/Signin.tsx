@@ -222,7 +222,7 @@ async function handleSignUp(
     name: string,
     email: string,
     password: string,
-    setError: (msg: string) => void,
+    setError: (msg: string | null) => void,
     setLoading: (v: boolean) => void,
     setEmailError: (v: boolean) => void,
     setSignupSuccess: (v: boolean) => void,
@@ -230,7 +230,7 @@ async function handleSignUp(
 ) {
     try {
         setLoading(true);
-        setError('null');
+        setError(null);
 
         await api('/auth/register', {
             method: 'POST',
@@ -245,6 +245,12 @@ async function handleSignUp(
                 'This email is already registered. Please sign in instead.',
             );
             setEmailError(true);
+            return;
+        }
+        if (err.status === 400) {
+            setError(
+                'This email is invalid. Please enter a valid email address.',
+            );
             return;
         }
 
