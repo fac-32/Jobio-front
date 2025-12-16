@@ -1,21 +1,41 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { Button } from './ui/Button';
 import logo from '../assets/logo.png';
-
-const username = localStorage.getItem('user_name');
-const isLoggedIn = !!localStorage.getItem('token');
+import { UserDropdown } from './ui/UserDropDown';
+import { useState } from 'react';
 
 export default function Navbar() {
+    const navigate = useNavigate();
+
+    const [isLoggedIn, setIsLoggedIn] = useState(
+        Boolean(localStorage.getItem('token')),
+    );
+
+    const [username, setUsername] = useState(
+        localStorage.getItem('user_name') ?? '',
+    );
+
+    function handleLogout() {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user_name');
+        localStorage.removeItem('user_id');
+
+        setIsLoggedIn(false);
+        setUsername('');
+        navigate('/');
+    }
+
     return (
-        <div className="sticky bg-white top-0">
+        <div className="sticky bg-white top-0 z-50">
             <header
                 className="
-  bg-white shadow-md rounded-4xl top-bar mt-4 mx-6  left-0 right-0 
-  border-[3px] border-indigo-700
-  ring-[3px] ring-indigo-400
-"
+                    bg-white shadow-md rounded-4xl top-bar mt-4 mx-6
+                    border-[3px] border-indigo-700
+                    ring-[3px] ring-indigo-400
+                "
             >
                 <div className="container mx-auto px-6 py-3 flex justify-between items-center">
+                    {/* Logo */}
                     <NavLink
                         to="/"
                         className="text-xl font-bold text-indigo-600 tracking-wide"
@@ -27,6 +47,7 @@ export default function Navbar() {
                         />
                     </NavLink>
 
+                    {/* Navigation */}
                     <nav className="flex items-center space-x-4">
                         <NavLink
                             to="/"
@@ -39,7 +60,6 @@ export default function Navbar() {
                             Home
                         </NavLink>
 
-                        {/* BioPage link */}
                         <NavLink
                             to="/bio"
                             className={({ isActive }) =>
@@ -50,6 +70,7 @@ export default function Navbar() {
                         >
                             Bio
                         </NavLink>
+
                         <NavLink
                             to="/match"
                             className={({ isActive }) =>
@@ -61,23 +82,12 @@ export default function Navbar() {
                             Match
                         </NavLink>
 
+                        {/* Auth */}
                         {isLoggedIn ? (
-                            <div className="flex items-center space-x-3">
-                                <span className="text-slate-700 font-medium">
-                                    {username}
-                                </span>
-
-                                <button
-                                    onClick={() => {
-                                        localStorage.removeItem('token');
-                                        localStorage.removeItem('user_name');
-                                        window.location.href = '/';
-                                    }}
-                                    className="text-sm text-red-500 hover:underline"
-                                >
-                                    Logout
-                                </button>
-                            </div>
+                            <UserDropdown
+                                username={username}
+                                onLogout={handleLogout}
+                            />
                         ) : (
                             <NavLink to="/sign-in">
                                 <Button variant="outline">Sign In</Button>
