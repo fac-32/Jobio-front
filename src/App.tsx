@@ -1,6 +1,8 @@
 // this works as an equivalent to laoyout
 import { Suspense, lazy } from 'react';
 import { Routes, Route } from 'react-router-dom';
+import ProtectedRoute from './components/ProtectedRoute';
+
 import MainLayout from './layout/MainLayout';
 
 // this is lazy import,
@@ -21,13 +23,21 @@ export default function App() {
         <>
             <Suspense fallback={<p>Loading…</p>}>
                 <Routes>
+                    {/* Public routes with layout */}
                     <Route element={<MainLayout />}>
                         <Route path="/" element={<Home />} />
-                        <Route path="/bio" element={<BioPage />} />
-                        <Route path="/match" element={<MatchPage />} />
                         <Route path="/sign-in" element={<SignIn />} />
+                        <Route
+                            path="/confirm-email"
+                            element={<ConfirmEmail />}
+                        />
+
+                        {/* Protected routes ALSO inside layout */}
+                        <Route element={<ProtectedRoute />}>
+                            <Route path="/bio" element={<BioPage />} />
+                            <Route path="/match" element={<MatchPage />} />
+                        </Route>
                     </Route>
-                    <Route path="/confirm-email" element={<ConfirmEmail />} />
                 </Routes>
             </Suspense>
         </>
