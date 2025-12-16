@@ -1,4 +1,6 @@
 import type { MatchResult } from './types';
+import { MascotImages } from '../../assets/mascotImages';
+
 
 type Props = {
     loading: boolean;
@@ -28,6 +30,9 @@ export function MatchResultPanel({ loading, result }: Props) {
                         Please add a job description to analyse how well it
                         matches your profile
                     </p>
+                    <div className="matchJobbie">
+                        <img src={MascotImages.idle} width={300} alt="Waving Jobbie"/>
+                    </div>
                 </div>
             </div>
         );
@@ -46,14 +51,24 @@ export function MatchResultPanel({ loading, result }: Props) {
         recommendation: result.recommendation ?? { label: '', message: '' },
     };
 
+
+    const score = safeResult.match_score;
+
     const headline =
-        safeResult.match_score >= 80
+        score >= 80
             ? "It's a match!"
+            
             : safeResult.match_score >= 65
               ? 'Decent match'
               : 'Weak match';
 
-    const score = safeResult.match_score;
+    const mascotImages =
+    score >= 80
+        ? MascotImages.happy  
+        : score >= 65
+        ? MascotImages.idle
+        : MascotImages.sad;
+
     const recommendationText =
         safeResult.recommendation.message || safeResult.recommendation.label;
 
@@ -62,6 +77,9 @@ export function MatchResultPanel({ loading, result }: Props) {
             <div className="card-header">
                 {/* <h1 className="card-title">Match results</h1> */}
                 <p className="match-quality">{headline}</p>
+                    <div className="matchJobbie">
+                    <img src={mascotImages} width={300} alt="Jobbie mascot" />
+                    </div>
             </div>
 
             <div className="results-body">

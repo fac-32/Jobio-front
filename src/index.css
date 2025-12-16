@@ -45,6 +45,11 @@ body {
 
 /* MatchPanel*/
 
+.matchJobbie {
+    justify-items: center;
+
+}
+
 .results-body {
     /* flex: 1; */
     overflow-y: auto;
