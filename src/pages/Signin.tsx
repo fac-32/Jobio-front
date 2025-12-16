@@ -223,7 +223,7 @@ async function handleSignUp(
 ) {
     try {
         setLoading(true);
-        setError(null);
+        setError('null');
 
         await api('/auth/register', {
             method: 'POST',
